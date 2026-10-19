@@ -37,7 +37,7 @@ A card is finished only when the user chooses a finishing option in the check-in
 - **Snoozed lists:** three lists, side by side and in this order: `Snoozed/Waiting this week`, `Snoozed/Waiting next week`, `Snoozed/Waiting later`. Every snoozed card lives in exactly one of them, picked by its `Snoozed until` date (see **Snoozed buckets**). "The Snoozed lists" in this skill means all three. If one is missing, create it next to the others and say so in the brief.
 - Stale = no activity in 7+ days.
 - Tools: Trello (cards and lists), Gmail, Google Calendar (optional), Google Drive and Sheets, scheduled tasks (paid plans only), Claude memory, a browser (optional, for public transport times).
-- **Category labels** on the board are Finance, Health, Family and Work, unless the user renamed or changed them. This skill never creates labels.
+- **Category labels** are whichever labels with a name exist on the board (for example Finance, Health, Family, Work). A new board has unnamed default labels, which are ignored; if there are no named labels the category check does nothing. This skill never creates labels, and the Trello connector cannot create them.
 
 ## Showing text (so it isn't collapsed)
 In some places (e.g. the Chrome side panel), text written between tool calls gets collapsed into a one-line progress summary that the user can't read without clicking. So:

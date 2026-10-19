@@ -1,6 +1,6 @@
 {
   "name": "life-automation",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Turns your inbox into a Trello to-do board and walks you through a daily task review.",
   "author": { "name": "Flako" }
 }
