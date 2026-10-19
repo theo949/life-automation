@@ -16,7 +16,7 @@ Read `/areas/life-automation.md`. If missing or paused ("paused" = true on a sch
 Skip on other days and on inline runs. On Monday: list_triggers (recurring, enabled; follow next_cursor) and find the task named "Life Automation: review". This task (named "Life Automation: prioritizer") must run exactly 75 minutes before it, same days. If its cron differs, update_trigger it (hour and minute computed minus 75, in the saved time zone) and carry on.
 
 ## Step 1: Read the board
-Read the lists. Working lists are `TO DO` and `In Progress`. Ignore `Done`, `Proposed` and the three Snoozed lists everywhere in this skill (never reorder, label or comment on them). For each open card in the working lists get: id, list, position, due date, labels, description, last activity.
+Read the lists. Working lists are `TO DO` and `In Progress`. Ignore `Done`, `Proposed` and the three Snoozed lists everywhere in this skill (never reorder or comment on them). For each open card in the working lists get: id, list, position, due date, description, last activity.
 
 ## Step 2: Reorder within each working list
 Never move a card to another list. Rules:
@@ -29,7 +29,6 @@ Never move a card to another list. Rules:
 The tab is a current-state snapshot, overwritten each run. Columns: `card_id, title, list, people_emails, thread_ids_hex, last_updated, refreshed_date`.
 - If the board read failed or returned no cards, leave the tab as it is and say so in the final reply.
 - Otherwise compute all rows first, then batch_clear_values on `'Card index'!A2:G2000` and write one row per open card in `TO DO`, `In Progress` and the three Snoozed lists, from A2, in one update_values call.
-- **Leave out entirely** (not even a redacted row) any card labelled `Health`, so health cards never reach the sheet.
 - `card_id` = the card's object id. `title` = card title. `list` = list name.
 - `people_emails` = the lowercase email addresses in the People lines of the card's `--- 🤖 Claude metadata ---` block, comma-separated (empty if no block).
 - `thread_ids_hex` = the Gmail thread IDs in the block's Emails lines, as lowercase 16-character hex IDs, comma-separated, deduplicated. Gmail links come in several shapes: (a) URLs ending in `thread-f:<decimal id>`: convert the decimal to hex with `python3 -c "print(format(int('<decimal id>'),'x'))"`; (b) URLs whose fragment ends in a 16-character hex token (`#all/<hex>`, `#inbox/<hex>`, `#sent/<hex>`): use that token as is; (c) `thread-a:r<number>` URLs: ignore. Do the conversions in one python run, not by hand.

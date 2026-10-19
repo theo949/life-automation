@@ -37,7 +37,6 @@ A card is finished only when the user chooses a finishing option in the check-in
 - **Snoozed lists:** three lists, side by side and in this order: `Snoozed/Waiting this week`, `Snoozed/Waiting next week`, `Snoozed/Waiting later`. Every snoozed card lives in exactly one of them, picked by its `Snoozed until` date (see **Snoozed buckets**). "The Snoozed lists" in this skill means all three. If one is missing, create it next to the others and say so in the brief.
 - Stale = no activity in 7+ days.
 - Tools: Trello (cards and lists), Gmail, Google Calendar (optional), Google Drive and Sheets, scheduled tasks (paid plans only), Claude memory, a browser (optional, for public transport times).
-- **Category labels** are whichever labels with a name exist on the board (for example Finance, Health, Family, Work). A new board has unnamed default labels, which are ignored; if there are no named labels the category check does nothing. This skill never creates labels, and the Trello connector cannot create them.
 
 ## Showing text (so it isn't collapsed)
 In some places (e.g. the Chrome side panel), text written between tool calls gets collapsed into a one-line progress summary that the user can't read without clicking. So:
@@ -263,28 +262,6 @@ Weeks run Monday to Sunday (in the user's time zone). Compare the card's `Snooze
 
 A card moving between Snoozed lists is still snoozed; `Snoozed from` keeps pointing to the list it returns to when it wakes.
 
-## Category labels
-Every card should carry a category label (one of the board's existing labels, e.g. Finance, Health, Family, Work). Claude checks this on **every review run**, so a card never stays unlabeled by accident. Snoozed cards are not shown in Step 3, so the sweep in Step 1 is the only place they get checked.
-
-### Which cards
-Every open card with **no label** in any list except `Done` and `Proposed`, **including the three Snoozed lists**, unless it has a Trello comment containing "No labels wanted". Cards that already have a label are never touched: this check adds labels, it never changes or removes them.
-
-### Deciding
-- Read the board's labels (trelloReadBoard `list_labels`). Ignore labels with no name. **Never create a new label.**
-- Judge each card from its title, description, metadata (People roles, Events), comments and the learnings file. Same bar for every label.
-- **Sure:** the card's subject clearly falls inside one label's meaning (for example a doctor, clinic or medical appointment fits Health). A card gets two labels only if both are clearly right.
-- **Not sure:** several labels could fit, none fits well, or the card is too vague. Then it is not sure; never guess.
-
-### Sure: attach it, no question
-When Claude is sure, it attaches the label itself (trelloWriteCard `attach_label`), without asking. This runs in Step 1 of every run, interactive or unattended. Report each one as a bullet under 🆕 in the brief ("Added label Health to [card](link)") and in the Step 5 wrap-up.
-
-### Not sure: suggest it, apply only on the user's yes
-- Only for a card that is shown in Step 3 (or in the single-card review). Snoozed or unattended cards that are not sure are left alone until they come up.
-- Suggest one or more of the existing labels with a one-line reason, as a bullet in the card summary ("No category label. Suggest: Health (doctor appointment)") and in the suggested action's description, so it is also in the buttons. Choosing the suggested action counts as the user's yes; apply the label then.
-- If the user says no to the label (button text or typed), add the Trello comment `**YYYY-MM-DD:** No labels wanted` and never suggest again for that card.
-- Never suggest for a card that already has a label.
-- Mention a label added this way in the card recap.
-
 ## Linked Google files (check for news)
 Applies to every card, with or without metadata, that has a Google Sheets, Docs or Slides file linked: in its attachments, description, comments or the metadata `Documents:` section (docs.google.com or drive.google.com URLs). It is read-only prep and runs in interactive and unattended runs. It exists because a comment on a linked guest-list sheet ("she said she can't make it") can be missed by a review that only reads the card.
 
@@ -317,13 +294,12 @@ The scheduled prep helper does the slow read-only prep ahead of time and writes 
 Keep this phase lean: do only what the Step 2 brief needs, so the user gets the summary fast. Per-card deep work (enrichment, travel checks, drafts) is prep and happens after the brief is sent (see Step 2b).
 
 - Load the settings (see **Before anything else**), read the learnings file (see **Learnings**), and, in the same batch of parallel calls, the **Review prep** tab (see **Review prep cache**).
-- Read cards in `In Progress` and `TO DO`, with due dates, checklists, labels and the latest comments.
+- Read cards in `In Progress` and `TO DO`, with due dates, checklists and the latest comments.
 - Read the `Proposed` list (cards with their proposal blocks). They stay out of the regular card order and out of the Snoozed handling. Count them for the brief, and note how many were found more than 7 days ago.
 - Read the three Snoozed lists, wake cards as needed and roll the rest forward (see **Snoozing** and **Snoozed buckets**). Create any missing list.
 - Cards still in a Snoozed list stay out of the rest of the review, **but still get a Meeting cleanup check** (see **Meeting cleanup**): that's where stale meetings pile up.
 - For every card with an `Events:` list, check each future entry against **Meeting cleanup** and collect the stale ones for Step 2a. Ignore past meetings here (they are handled by **Past meetings** at the card).
 - Work out each card's deadline (see **Deadlines**).
-- Run the **Category labels** check on every open card without a label, **Snoozed cards included**: attach the label where Claude is sure, and keep the not-sure ones for their card summary. Count the added labels for the 🆕 section of the brief.
 - Go through the rest in the Step 0 priority order.
 
 ### 1a. Cards that already have metadata (check for news)
@@ -350,7 +326,7 @@ Send the brief with SendUserMessage (see **Showing text**).
 
 Sections, in this order. Use only these icons, no new ones. Plain text only.
 
-- 🆕 **What moved since last time:** new replies (including woken cards), changed cards, labels added by the Category labels check.
+- 🆕 **What moved since last time:** new replies (including woken cards), changed cards.
 - 📥 **Proposed:** N proposed tasks from Gmail waiting for triage (K found more than 7 days ago). Only if the `Proposed` list has cards.
 - ⏰ **Due soon:** overdue, due today, and due in the next 7 days (these repeat every day until done).
 - ⏳ **Waiting on:** who, since when, follow-up due (cards snoozed until reply).
@@ -364,7 +340,7 @@ Sections, in this order. Use only these icons, no new ones. Plain text only.
 - 😴 Snoozed, 💤 Stale (when none) and 🧹 stay single lines. The ▶️ line stays last.
 - **⏰ Due soon:** date first, then the card link and a short detail in brackets. Sort by deadline, today first. Format: `- Today: [card](link) (dentist 10:30)`, `- Fri Oct 16: [card](link) (wakes that day)`. When a snooze date and a deadline coincide, say so in the brackets.
 - **⏳ Waiting on:** `- Who, [card](link): since <date>, follow-up <date>` (or `last reply <date>` when they replied).
-- **🆕:** one bullet per news item (a reply, a woken card, a card moved, a changed card, a label added), each with its link.
+- **🆕:** one bullet per news item (a reply, a woken card, a card moved, a changed card), each with its link.
 - Cap each section at about 5 bullets. If there are more, show the 5 most urgent and end with `- and K more`.
 - Every bullet is one short line with a link. No long prose. **Don't show any individual card details or options in the brief.**
 - **One-time notes** go as a single bullet under 🆕 when they apply: "No home address saved, so I'm not adding travel events (add one with /todo settings)", and, on paid plans, "No prep today (<reason>), prepping live".
@@ -420,13 +396,12 @@ Do the removals as described under **Meeting cleanup**, then continue to Step 2c
    - the lookup of past meetings with no recorded outcome (**Past meetings**),
    - the **Card content check** (checklist items, title and description against what was found),
    - whether the only thing still open on the card is an upcoming meeting (see Step 3.2), so the snooze until the meeting day can be the suggested action,
-   - the label suggestion for a card the Category labels check was not sure about,
    - the suggested action, with the option descriptions already worked out (Step 3.2),
    - any email draft the suggested action needs (drafted, never sent),
    - the public-transport travel time for a suggested in-person meeting (only if a home address is saved),
    - the card summary bullets (Step 3.1), ready to send.
 4. **How to run it in parallel:** if the Agent tool is available, use one subagent per card (or small batches) that returns a ready-to-use prep note; otherwise batch independent tool calls in a single message. Don't prep every card on the board up front. Keep roughly the next 3 cards prepped: while the user is answering card N, prep for N+1 and N+2 is running or done, and you start prep for the next card as each one is shown. The proposed tasks need no prep: the discovery helper already wrote what's needed into each card.
-5. **Prep never changes anything.** No Trello writes, no emails sent, no calendar events created, no learnings saved. Everything still needs the user's click or yes at the card, exactly as in Step 3, Step 4 and Step 5. (The sure labels from the Category labels check were already attached in Step 1.)
+5. **Prep never changes anything.** No Trello writes, no emails sent, no calendar events created, no learnings saved. Everything still needs the user's click or yes at the card, exactly as in Step 3, Step 4 and Step 5.
 6. **Before showing a prepped card,** re-check that it hasn't changed since prep with ONE cheap call (a single card read for its list, latest comment and `Last updated`), batched in the same turn as any other call you are making for that card. Do not re-verify anything else, and do not re-read lists. If something changed, or something the user just did on an earlier card affects this one, redo only the affected part first.
 7. Unattended runs (scheduled, nobody to answer) have no card-by-card part, so no prep either.
 
@@ -462,14 +437,13 @@ Take the user through the cards **one at a time**, in the Step 0 priority order.
    - `**Card X of N:** [card name](link) · list · deadline if any`
    - 1–3 bullets on where it stands: latest comment, new emails (with thread link), what it's waiting on, money or dates involved, the user's own next step. Only mention meetings that are still in the future as upcoming; a past meeting is only shown through the **Past meetings** follow-up. If an upcoming in-person meeting has no travel event, add one bullet for it (see **Meetings and travel**, item 8).
    - If the **Card content check** found an outdated checklist item, title or description, one bullet for it.
-   - If the card has no label and the Category labels check was not sure, one bullet with the label suggestion (see **Category labels**).
    - If Step 1b found metadata for this card, one bullet saying what metadata was written.
    - No numbered options in the text. The options are the buttons in the next step.
    - **Never skip the summary**, even when the card seems obvious.
 2. **Ask one question for this card** with AskUserQuestion. One card per question; never batch several cards into one question. Pick the options like this. Every snooze option shows its real date in the label:
 
    **Cards with no deadline, or a deadline more than 31 days away:** exactly these four, in this order:
-   1. **The suggested action**, labeled with the action and "(Recommended)". If the card has a trusted row in the **Review prep cache**, start from its `suggested_action`. Put what it will do in the option's description (including any checklist, title or description update from the Card content check, adding the suggested label, if any, and, for a suggested meeting, the travel event that goes with it if it's in person, and creating any missing travel event named in the summary). Shape the suggestion using the saved learnings and the card's emails, calendar and activity.
+   1. **The suggested action**, labeled with the action and "(Recommended)". If the card has a trusted row in the **Review prep cache**, start from its `suggested_action`. Put what it will do in the option's description (including any checklist, title or description update from the Card content check, and, for a suggested meeting, the travel event that goes with it if it's in person, and creating any missing travel event named in the summary). Shape the suggestion using the saved learnings and the card's emails, calendar and activity.
       - **When the card is waiting on someone** (we already emailed or asked them and nothing has come back), the suggested action is a snooze until reply, with a **7-day** follow-up, worded with "Snooze" so it matches the other snooze buttons: **"Snooze until <Name> replies or <Day Mon D> (Recommended)"** where the date is today + 7, e.g. "Snooze until Dana replies or Thu Oct 15 (Recommended)". Description: "Hidden in Snoozed until they reply or Oct 15, whichever comes first. If there's no reply by then, it comes back with a nudge." If the card has a deadline, the follow-up date must be at least 1 day before it; use the earlier date.
       - **When the only thing still open on the card is an upcoming meeting** (a future, not stale meeting in `Events:`, no unchecked checklist items, no reply awaited, no email to send, no missing travel event), the suggested action is a snooze until the meeting day: **"Snooze until <Day Mon D> (meeting day) (Recommended)"**, where the date is the earliest such meeting's date. Description: "Hidden in Snoozed until the day of the meeting, then back in your daily review." Skip this if the meeting is today, or if its date is later than 1 day before the card's deadline. The date in the label counts as the user's choice.
    2. **"Snooze 7 days (<Day Mon D>)"**
@@ -485,12 +459,12 @@ Take the user through the cards **one at a time**, in the Step 0 priority order.
 
    The tool adds a free-text **"Other"** box automatically. That's the user's own action or a chat about this card. It is also where they can type "stop" (see **Stopping the review**).
 3. **Act on the answer:**
-   - **Suggested action:** do it (see Step 4; emails still need the user's yes on the final text), including attaching the suggested label if the description named one. If the action creates a meeting, follow **Meetings and travel**. If the task isn't finished, leave the card unsnoozed so it shows up in every review until it's done. If the action leaves the ball in someone else's court, a snooze until reply is needed: ask for the date (see **The date is always the user's decision**). If the suggested action is the snooze until the meeting day, follow **Snoozing**.
+   - **Suggested action:** do it (see Step 4; emails still need the user's yes on the final text). If the action creates a meeting, follow **Meetings and travel**. If the task isn't finished, leave the card unsnoozed so it shows up in every review until it's done. If the action leaves the ball in someone else's court, a snooze until reply is needed: ask for the date (see **The date is always the user's decision**). If the suggested action is the snooze until the meeting day, follow **Snoozing**.
    - **Snooze until reply:** follow **Snoozing** (metadata with `Snoozed until`, `Snoozed from` set to the card's current list, and `Wake on reply from`, add the person to People if missing, move to the right Snoozed list, comment).
    - **Snooze until before the deadline / Snooze 7 / 30 days / Snooze until the meeting day:** follow **Snoozing** (metadata, move to the right Snoozed list, comment). Don't change the card's due date.
    - **Skip for today:** change nothing on the card. Just move on; it comes back in tomorrow's review as usual.
    - **Stop / that's enough / I'm out of time (typed in "Other" or as a chat message):** follow **Stopping the review**.
-   - **Other (the user's text):** treat it as a conversation about this card. Do what they asked, ask follow-up questions if needed, and stay on this card until it's handled. A normal chat message typed on this card counts the same as "Other". If they say something is done, apply **Stated done is the go-ahead**. If they decline the suggested label, add the "No labels wanted" comment (see **Category labels**). Then do the **check-in** below. Do NOT move to the next card on your own.
+   - **Other (the user's text):** treat it as a conversation about this card. Do what they asked, ask follow-up questions if needed, and stay on this card until it's handled. A normal chat message typed on this card counts the same as "Other". If they say something is done, apply **Stated done is the go-ahead**. Then do the **check-in** below. Do NOT move to the next card on your own.
 
    **Check-in (whenever the user wrote anything themselves, by "Other" or as a normal chat message, or the card still has parts left):**
    - After doing what was asked (and the Step 3.4 card update), send a short recap of what was done (SendUserMessage, same shape as the Step 3.5 recap), then ask one question with AskUserQuestion. The question's first sentence says what was done and where the card now sits, so the user never thinks the card changed state when it didn't: "<what was done>. The card stays in <list>. Anything else on it?" (for example "Thank-you email sent and logged. The card stays in TO DO. Anything else on it?"). `<list>` is the card's real list after the Step 3.4 update. If the card moved (to a Snoozed list), say so instead of "stays": "The card is now in <list>."
@@ -522,7 +496,7 @@ Take the user through the cards **one at a time**, in the Step 0 priority order.
    - Moved the card to Snoozed/Waiting next week (back in In Progress on Thu Oct 15)
    - Snoozed until Dana replies or Thu Oct 15
    ```
-   - One bullet per thing actually done: emails sent, comments added, metadata written, label added, checklist items ticked, card moved (say which list), due date set, meeting and travel events created (with the travel time and where it came from), watcher or reminder created, snoozed until date / reply / meeting day, or "stays in daily review until done".
+   - One bullet per thing actually done: emails sent, comments added, metadata written, checklist items ticked, card moved (say which list), due date set, meeting and travel events created (with the travel time and where it came from), watcher or reminder created, snoozed until date / reply / meeting day, or "stays in daily review until done".
    - For **Skip for today**, just `⏭️ Skipped [card name]`.
    - Only list things that really happened. If an action failed, say so in the recap.
    - **Don't wait for the writes (Snooze and Skip answers only).** Send the writes and, in the same turn, send the next card's SendUserMessage (its recap on top, then the card header and bullets) and its AskUserQuestion, so the user can read and answer while the writes finish. Before the message after that, check that all the writes succeeded; if one failed, say so at the top of the next message and fix it first. Write recap bullets only for writes you have confirmed; for the ones still running, write what is being done ("Snoozing until ..."). Anything involving an email, a calendar event, a checklist change, a due date or moving a card to `Done` still waits for its result before the next card, as does any answer that needs a date or a check-in from the user.
@@ -557,7 +531,6 @@ Send with SendUserMessage.
 - What changed today (including cards snoozed and skipped).
 - Proposals from Gmail: A added, B merged, C dismissed, D already completed, E skipped (only if there were any).
 - If the user stopped early: "Reviewed X of N cards and Y of M proposals. Not reviewed: <card links>" (see **Stopping the review**).
-- Labels added today (by the Category labels check or at a card), with card links. Only if any.
 - Top 1–3 focus items for tomorrow.
 - Propose 0–2 new learnings from today (see **Learnings**), including a `Gmail discovery:` learning when the user dismissed several proposals of the same kind. Save only the ones the user confirms.
 - Ask about the learnings with AskUserQuestion (one question per learning; skip the question if there are none). Send the wrap-up first, then handle the learnings; that is always the last thing in the run.
