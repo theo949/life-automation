@@ -101,6 +101,7 @@ First search Drive for a sheet titled "Life Automation Log". If one exists, ask:
 - `Proposals`: found_date, thread_id, card_id, sender_domain, category, suggested_list, status, outcome_date, outcome_list, notes
 - `Review prep`: item_type, item_id, list, deadline, new_thread_ids_hex, calendar_change, news, suggested_update, suggested_action, proposal_suggestion, merge_target_card_id, reason_codes, confidence, prepared_at, prepared_date, notes
 - `Brief`: line_no, kind, text, prepared_at, prepared_date
+- `Timing`: run_date, item_type, item_id, shown_at, answered_at, writes_done_at, next_shown_at
 
 Keep IDs and dates as text. Do not mention the log sheet's contents to the user beyond "your log sheet".
 

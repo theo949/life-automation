@@ -48,6 +48,20 @@ Possible match: <Trello card link if an existing card clearly covers the same su
 ```
 
 Suggested list: `In Progress` if it is a conversation the user is already actively handling (they replied recently); otherwise `TO DO`. Do not set the card's due date or members.
+
+Below the proposal block, in the same description, also write the normal metadata block, so accepting the proposal later needs no rewrite of it:
+
+```
+--- 🤖 Claude metadata ---
+Last updated: YYYY-MM-DD
+People:
+- Name <email>, role if obvious
+Emails:
+- Short neutral description (who, when, what): <Gmail thread URL>
+--- end ---
+```
+
+Keep it neutral and short, the same facts as the proposal block (sender, thread). The review removes the proposal block when the user adds the card and keeps this one.
 After each card is created, append one row to the Proposals tab: found_date, thread_id (hex), card_id (the card's object id), sender_domain, category, suggested_list, status=open, empty outcome_date and outcome_list, and an empty notes field.
 
 ## STEP 3a: Card news
