@@ -100,6 +100,7 @@ First search Drive for a sheet titled "Life Automation Log". If one exists, ask:
 - `Card news`: found_date, thread_id, last_msg_date, card_id, sender_domain, category, needs_action, notes
 - `Proposals`: found_date, thread_id, card_id, sender_domain, category, suggested_list, status, outcome_date, outcome_list, notes
 - `Review prep`: item_type, item_id, list, deadline, new_thread_ids_hex, calendar_change, news, suggested_update, suggested_action, proposal_suggestion, merge_target_card_id, reason_codes, confidence, prepared_at, prepared_date, notes
+- `Brief`: line_no, kind, text, prepared_at, prepared_date
 
 Keep IDs and dates as text. Do not mention the log sheet's contents to the user beyond "your log sheet".
 
@@ -116,7 +117,7 @@ Create four scheduled tasks, each named exactly as below, in the user's time zon
 - `Life Automation: prioritizer` at T minus 75 minutes. Prompt: "Run the todo-prioritizer skill (Life Automation plugin). Read /areas/life-automation.md first for settings. If that skill is not available, say so in one line and stop."
 - `Life Automation: discovery` at T minus 60 minutes. Prompt: same, with the todo-discovery skill.
 - `Life Automation: prep` at T minus 45 minutes. Prompt: same, with the todo-prep skill.
-- `Life Automation: review` at T. Prompt: "Prepare the daily brief using the todo-review skill, Steps 1 and 2 only. Read-only: do not send email, write card metadata, move cards, snooze cards or change anything. Do not start the card-by-card part and do not ask questions. End with the line: Type /todo to start the card-by-card review."
+- `Life Automation: review` at T. Prompt: "Show the daily brief using the todo-review skill (see its Morning brief section): if the saved brief in the Brief tab is from today, show it as saved; otherwise build it with Steps 1 and 2 only. Read-only: do not send email, write card metadata, move cards, snooze cards or change anything. Do not start the card-by-card part and do not ask questions. End with the line: Type /todo to start the card-by-card review."
 
 Verify each was created by listing scheduled tasks. If a scheduled run later cannot find these skills, the user can still use `/todo`, which always works. If scheduling fails, fall back to the non-paid path and say so in one line.
 

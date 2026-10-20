@@ -288,12 +288,24 @@ The scheduled prep helper does the slow read-only prep ahead of time and writes 
 - **One freshness check for the whole review:** the cache was written before the review, so after reading it run ONE inbox-wide Gmail search for threads newer than the meta row's `prepared_at`, and match the results against the Card index `people_emails`. Any hit marks that card "live prep" (its row is not trusted for email news). Repeat this single search at most once more in the review, never per card. Calendar changes after `prepared_at` are caught by the card's own meeting re-check (Meeting cleanup), not by a new search.
 - **Using the row's suggestions:** `suggested_action` picks the Recommended button for the card (send_email, snooze_until_reply, snooze_until_meeting, schedule_meeting, update_card, mark_done, nudge; none means keep it open, needs_review means decide yourself). The row never decides a snooze date: dates come from the rules in **Snoozing** and the buttons. `reason_codes` and `suggested_update` drive the summary bullets (for example `missing_travel`, `meeting_past_no_outcome`, `checklist_outdated`, `deadline_soon`, `waiting_7d`). If the card shows the suggestion is wrong, say so briefly and use your own.
 - **Proposals:** `proposal_suggestion` (add, merge, dismiss, completed) picks the Recommended button in Step 2c; `merge_target_card_id` is the card to merge into.
-- The review never writes to the Review prep tab.
+- The review never writes to the Review prep tab. (Its only sheet write for the brief is the Brief tab after a refresh, see **Morning brief**.)
+
+## Morning brief (saved by the prep helper, paid plans)
+The prep helper also builds the daily brief and saves it to the **Brief** tab of the Google Sheet "Life Automation Log", so it can be shown at once instead of rebuilt. On non-paid plans there is no prep helper and no Brief tab: build the brief live, with no question and no warning line.
+
+- **Format:** header row `line_no, kind, text, prepared_at, prepared_date`. Row 2 is the meta row (`kind=meta`; `text` holds the status `ok`, `partial` or `failed`; `prepared_at` is UTC; `prepared_date` is the user's date). The rows after it are the brief, one per line, in order (`kind=line`, or `blank` for an empty line). The lines are what Step 2 would send, without the "Prepared at" line and the ▶️ line.
+- **When it is usable:** read the tab in Step 1, in the same parallel batch as the Review prep tab. It is usable only if `prepared_date` is today (user's time zone) and the status is `ok` or `partial`. Otherwise build the brief live as in Step 2 (on paid plans keep the one-line "No prep today (<reason>), prepping live" note). If the tab is missing or can't be read, build live. Never fail or wait because of it.
+- **Interactive review with a usable brief:** decide before any other brief work.
+  1. If `prepared_at` is less than 30 minutes ago, use it without asking.
+  2. Otherwise ask with AskUserQuestion: "I prepared your brief <this morning at HH:MM | today at HH:MM>. Use it, or refresh it from Gmail and Trello now?" (say "this morning" only when the time is before 12:00; times in the user's time zone). Options: **"Use the morning brief (Recommended)"** (description: "Shows it right away. I still check for email that arrived since HH:MM.") and **"Refresh it now"** (description: "Reads Gmail and Trello again and builds a new brief. Takes a bit longer.").
+- **Use it:** send message 1 with SendUserMessage: the saved title line, then a line `Prepared at HH:MM`, then the saved lines exactly as they are (do not rewrite them). In the same turn start the rest of Step 1 that the brief does not cover: read the three Snoozed lists, wake cards and roll the Snoozed lists forward (see **Snoozing**), read the working lists and the Proposed list (for the counts), and run the freshness check from **Review prep cache**. When that is done, send message 2: first any `🆕 Since HH:MM` bullets (one per new email or woken card, left out if none), then the ▶️ line with the real counts. Continue with Step 2b as usual. The user reads message 1 while this runs.
+- **Refresh it:** build the brief live (Step 1 and Step 2, ignoring the saved one), send it, then overwrite the Brief tab with it in the same format (one batch_clear_values on `'Brief'!A2:E200`, one update_values; meta row with status `ok`, `prepared_at` now, `prepared_date` today). This is the only thing the review writes to the Brief tab. A refreshed brief does not refresh the Review prep cache: the freshness check still covers the time since the morning prep.
+- **Unattended runs (the scheduled review task):** no question. If the brief is usable, send it as in "Use it" (title line, `Prepared at HH:MM`, the saved lines) without the Step 1 writes, since unattended runs change nothing, and without the ▶️ line; then add the closing line the task asks for. If it is not usable, build the brief live as in Step 2, read-only.
 
 ## Step 1: Gather (quietly, no narration)
 Keep this phase lean: do only what the Step 2 brief needs, so the user gets the summary fast. Per-card deep work (enrichment, travel checks, drafts) is prep and happens after the brief is sent (see Step 2b).
 
-- Load the settings (see **Before anything else**), read the learnings file (see **Learnings**), and, in the same batch of parallel calls, the **Review prep** tab (see **Review prep cache**).
+- Load the settings (see **Before anything else**), read the learnings file (see **Learnings**), and, in the same batch of parallel calls, the **Review prep** tab (see **Review prep cache**) and the **Brief** tab (see **Morning brief**).
 - Read cards in `In Progress` and `TO DO`, with due dates, checklists and the latest comments.
 - Read the `Proposed` list (cards with their proposal blocks). They stay out of the regular card order and out of the Snoozed handling. Count them for the brief, and note how many were found more than 7 days ago.
 - Read the three Snoozed lists, wake cards as needed and roll the rest forward (see **Snoozing** and **Snoozed buckets**). Create any missing list.
@@ -322,6 +334,8 @@ Keep this phase lean: do only what the Step 2 brief needs, so the user gets the 
 - Write the metadata into the card's description using the **Card metadata format** above, with every item sorted into its section.
 
 ## Step 2: Status brief (short)
+On a paid plan with a usable saved brief, follow **Morning brief** (use it, or refresh it) instead of building from scratch; the rest of this step describes how a brief is built live and what it must look like.
+
 Send the brief with SendUserMessage (see **Showing text**).
 
 Sections, in this order. Use only these icons, no new ones. Plain text only.

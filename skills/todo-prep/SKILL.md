@@ -1,13 +1,13 @@
 ---
 name: "todo-prep"
-description: "Life Automation helper (paid plans): does the slow read-only prep for the daily review ahead of time and writes it to the Review prep tab. Runs on the daily schedule 45 minutes before the review."
+description: "Life Automation helper (paid plans): does the slow read-only prep for the daily review ahead of time and writes it to the Review prep tab and saves the finished daily brief to the Brief tab. Runs on the daily schedule 45 minutes before the review."
 ---
 
 # Review prep (helper, paid plans only)
 
-Does the slow, read-only prep for the daily review ahead of time and writes it to the **Review prep** tab of the Google Sheet "Life Automation Log", so the review (`todo-review`) starts fast. It runs silently as a scheduled task 45 minutes before the review, after `todo-prioritizer` (75 minutes before) and `todo-discovery` (60 minutes before). Non-paid plans never run it: the review preps live.
+Does the slow, read-only prep for the daily review ahead of time and writes it to the **Review prep** tab of the Google Sheet "Life Automation Log", so the review (`todo-review`) starts fast. It also builds the daily brief and saves it to the **Brief** tab (STEP 5b), so the brief is ready to show the moment the user opens the review. It runs silently as a scheduled task 45 minutes before the review, after `todo-prioritizer` (75 minutes before) and `todo-discovery` (60 minutes before). Non-paid plans never run it: the review preps live.
 
-Never send, draft, label, archive or delete any email. Never create or change calendar events. Never write to Trello (no comments, metadata, moves, labels, snoozes, checklist changes). Never message anyone. Never create scheduled tasks; the only scheduled-task change allowed is aligning this task's own cron in STEP 0. The only thing you may write is the **Review prep** tab (cleared and rewritten each run, STEP 5); read the other tabs only. Keep IDs and dates as text (prefix with an apostrophe). **Privacy:** the sheet gets pointers, flags and codes only: no subjects, names, amounts or free text.
+Never send, draft, label, archive or delete any email. Never create or change calendar events. Never write to Trello (no comments, metadata, moves, labels, snoozes, checklist changes). Never message anyone. Never create scheduled tasks; the only scheduled-task change allowed is aligning this task's own cron in STEP 0. The only things you may write are the **Review prep** tab (STEP 5) and the **Brief** tab (STEP 5b), each cleared and rewritten every run; read the other tabs only. Keep IDs and dates as text (prefix with an apostrophe). **Privacy:** the Review prep tab gets pointers, flags and codes only: no subjects, names, amounts or free text. The one exception is the **Brief** tab, which holds the brief text the user would read anyway: card titles and short one-line details in the brief's format, never email bodies, quoted email text or account numbers.
 
 ## STEP 0: Settings and schedule check
 Read `/areas/life-automation.md`. If missing, or paused, say so in one line and stop. Use the saved time zone and the saved board and sheet names. Find the board by name in Trello and the sheet by title in Drive; never use stored IDs.
@@ -19,7 +19,7 @@ b) Read these tabs: **Card index** (`card_id, title, list, people_emails, thread
 c) Work out today's date in the saved time zone (python3 zoneinfo) and the current UTC timestamp for `prepared_at`.
 
 ## STEP 2: Read the board
-Read all lists except `Done` and `Proposed`. **Review order** (the order the review walks the cards): the working lists are `TO DO` and `In Progress`; start at `In Progress` and then `TO DO`; within a list, top to bottom by card position. Due dates do not change this order. Cards in the three Snoozed lists are not prepped as cards; only check their metadata for stale FUTURE meetings (STEP 3 calendar check) and write a row for a snoozed card only if it has such a meeting. **Cap:** full prep for the first 35 working cards in review order; for the rest write a row with `reason_codes=no_prep_cap` and `suggested_action=none`, and count them as cap overflow.
+Read all lists except `Done` and `Proposed`. **Review order** (the order the review walks the cards): the working lists are `TO DO` and `In Progress`; start at `In Progress` and then `TO DO`; within a list, top to bottom by card position. Due dates do not change this order. Cards in the three Snoozed lists are not prepped as cards; only check their metadata for stale FUTURE meetings (STEP 3 calendar check) and write a Review prep row for a snoozed card only if it has such a meeting. Also keep what STEP 5b needs from them: list, `Snoozed until`, `Wake on reply from`, Trello due date and last activity. **Cap:** full prep for the first 35 working cards in review order; for the rest write a row with `reason_codes=no_prep_cap` and `suggested_action=none`, and count them as cap overflow.
 
 ## STEP 3: Per-card prep (read-only)
 Use subagents in batches of about 5 cards if the Agent tool is available, otherwise batch independent tool calls. For each card read the full card (description, comments), its checklists directly (trelloReadChecklist; the plain card read can show none), and its `--- 🤖 Claude metadata ---` block. Record:
@@ -46,5 +46,19 @@ Compute all rows first. Then, in ONE update_values call (so the tab is never hal
 - Then all card rows in review order (`item_type=card`), then the proposal rows (`item_type=proposal`). Fill `prepared_at` and `prepared_date` on every row.
 - If the board read failed, still replace the tab with only the meta row (status `failed`) so the review knows there is no prep today.
 
+## STEP 5b: Build and save the brief
+Build the daily brief the way the review's Step 2 would, from the rows you just computed and the cards you already read. Read nothing new except where noted. Follow the review skill's Step 2 layout exactly (sections, icons, one item per line, about 5 items per section and then "and K more"). Everything here is read-only.
+- **Title line:** `Daily brief, <Day Mon D>` in the saved time zone.
+- **🆕:** one bullet per card row with `news=yes` or `calendar_change` new or moved (a neutral one-line summary from the thread you already read, with the card link and the Gmail thread link); one bullet per snoozed card whose `Snoozed until` is today or earlier (`[card](link) wakes today`; the review does the actual waking); one bullet per snoozed card with `Wake on reply from` where a message from those addresses arrived since the snooze (read-only Gmail search). If there is nothing: `🆕 Nothing new since the last run`.
+- **📥:** `📥 N proposed tasks from Gmail waiting for triage (K found 7+ days ago)` from the proposal rows (K = rows with `old_7d`). Only if there are proposals.
+- **⏰ Due soon:** overdue, due today and due in the next 7 days from the `deadline` column, plus snoozed cards with a Trello due date on or before today. Date first, sorted by deadline.
+- **⏳ Waiting on:** snoozed cards with `Wake on reply from`: who, card link, since the snooze date, follow-up date.
+- **💤 Stale:** working cards with no activity for 7+ days (up to 5), or `💤 Stale: none`.
+- **😴 Snoozed:** `😴 Snoozed: N this week · N next week · N later`, counted by list.
+- **🧹:** `🧹 Stale future meetings: N on M cards` from rows with `calendar_change=deleted`. Only if there are any.
+- **Leave out** the "Prepared at" line, the ▶️ line and the "Type /todo" line: the review adds those when it shows the brief.
+
+Write it to the **Brief** tab of the log sheet. If the tab does not exist, add it first (Google Sheets update_spreadsheet, add a sheet named `Brief`) with the header row `line_no, kind, text, prepared_at, prepared_date`. Then, after one batch_clear_values on `'Brief'!A2:E200`, write ONE update_values from A2: first the meta row (`line_no=0`, `kind=meta`, `text` = the same status as the Review prep meta row, `prepared_at` and `prepared_date` as in STEP 5), then one row per brief line in order (`line_no` 1, 2, 3 and so on, `kind=line`, `text` = the line exactly as it should be shown; an empty line is `kind=blank` with empty text). Fill `prepared_at` and `prepared_date` on every row. Keep every text cell as plain text (apostrophe prefix) so a line that starts with a dash is not read as a formula. If the board read failed, write only the meta row with status `failed`.
+
 ## STEP 6: Final reply (the run record, 2-5 lines)
-Status, cards prepped, proposals prepped (add, merge, dismiss and completed counts), cap overflow, Card index age, whether the Monday schedule check ran and changed anything, any error. Do not email or message anyone.
+Status, brief lines saved, cards prepped, proposals prepped (add, merge, dismiss and completed counts), cap overflow, Card index age, whether the Monday schedule check ran and changed anything, any error. Do not email or message anyone.
