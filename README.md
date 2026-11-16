@@ -29,6 +29,22 @@ To add a connector, open **Settings → Customize → Connectors**, find it in t
 
 **Tip:** the Claude browser extension makes this smoother. With your Trello board open, press Cmd+E (Mac) or Ctrl+E (Windows), or click the Claude icon at the top right of your browser, to open Claude beside your board. Without the extension, keep a browser window with Trello next to the Claude app.
 
+## How the daily run works
+
+On a plan with scheduled tasks, three helpers run in the hour before the review time you choose, so your review is ready when you sit down:
+
+1. **Prioritizer:** ranks your cards and wakes snoozed ones.
+2. **Discovery:** scans your recent email for new to-dos and adds them to your Proposed list.
+3. **Prep:** reads ahead on each card so the walkthrough is fast.
+
+At your review time, Claude shows a short brief. Type `/todo` to go through your tasks, then or any time you like. Without scheduled tasks there are no helpers, so each `/todo` run does this prep first and takes a minute or two longer.
+
+## If it feels slow
+
+- Look back a shorter time in your email. The default on a free plan is 3 days.
+- Review a few cards at a time and stop when you like. Your place is saved.
+- A paid plan with scheduled tasks does the prep before you sit down, so the review opens quickly.
+
 ## Commands
 
 | Command | What it does |
