@@ -11,6 +11,16 @@ Life Automation turns your inbox into a Trello to-do board and walks you through
 
 To add a connector, open **Settings → Customize → Connectors**, find it in the list and press **Connect**.
 
+## Install
+
+**In the Claude app:** Settings → Customize → Plugins → Add → Add from a repository, then enter `theo949/life-automation` and install Life Automation.
+
+**In Claude Code:**
+
+```
+/plugin install life-automation --marketplace theo949/life-automation
+```
+
 ## Get started
 
 1. Install the plugin, then type `/todo` in Claude. Setup runs once: it checks your connectors, asks a few questions, then builds your Trello board, a Google Sheet log and (on paid plans) the daily schedule.

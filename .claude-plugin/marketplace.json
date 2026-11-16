@@ -1,0 +1,11 @@
+{
+  "name": "life-automation",
+  "owner": { "name": "Flako" },
+  "plugins": [
+    {
+      "name": "life-automation",
+      "source": "./",
+      "description": "Turns your inbox into a Trello to-do board and walks you through a daily task review."
+    }
+  ]
+}
