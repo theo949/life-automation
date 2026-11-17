@@ -59,7 +59,12 @@ At your review time, Claude shows a short brief. Type `/todo` to go through your
 - **Creates:** a Trello board with cards and comments, a Google Sheet log and, on paid plans, a daily schedule.
 - **Never:** sends an email without showing you the exact text first.
 
-Your home address, if you give one for travel times, is kept in your Claude memory, never in Trello or the sheet.
+## Privacy
+
+- Life Automation has no server of its own. Everything runs in your Claude account, through the connectors you approved.
+- It reads your recent email, your Trello board and, if you connect it, your calendar.
+- Your home address, if you give one for travel times, is saved in your Claude memory, never in Trello or your sheet. You can enter the nearest metro or bus stop instead.
+- It never sends an email without showing you the exact text first.
 
 ## Usage
 

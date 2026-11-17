@@ -38,7 +38,7 @@ Goal: take a new user from nothing to a working daily task review in as few scre
 One dialog. Put a blank line between the paragraphs. Question text (paid path):
 > Welcome to Life Automation.
 >
-> I'll turn your inbox into a to-do board and walk you through it each morning.
+> Stay on top of family, personal and finance tasks without the dread. I do most of the work while you sit back with a coffee.
 >
 > What I read: your email from the lookback window you choose, your Trello board, and (optionally) your calendar.
 >
@@ -64,7 +64,7 @@ Show one dialog. Question text: "Checking your connections…", then one line pe
   - Trello: Where your tasks live. You can sign up for free at trello.com.
   - Gmail: How I spot the to-dos in your email.
   - Google Drive and Sheets: Where I keep data about your tasks, so everything runs smoother.
-  - Google Calendar (optional): Lets me turn tasks into calendar events.
+  - Google Calendar (optional): Lets me add calendar events for your tasks.
 - If something is missing, end with: "How to connect: open Settings → Customize → Connectors, find each one in the list and press Connect. Sign in when asked, then come back here." (Say "it" instead of "each one" if only one is missing.)
 - If nothing is missing, end with: "Everything I need is connected."
 
@@ -98,7 +98,7 @@ Save the answers.
 ### 5. Lookback and home address
 One dialog with two questions:
 - "How far back should I look in your email for to-dos?" Paid path options: 1 week (recommended) / 2 weeks / 1 month. Non-paid path options: 3 days (recommended) / 1 week / 2 weeks, with this line under the question: "On a free plan, a longer lookback can use up your usage quickly, so I suggest starting short. You can widen it later."
-- "Home address (optional). I use it to work out travel time to your appointments. Skip it and add it later if you like. For more privacy, enter the nearest metro or bus stop instead. Saved in your Claude memory, never in Trello or your sheet." Options: "Skip for now" / "Enter it (choose Other and type it)".
+- "Home address (optional). I use it to work out travel time to your appointments. For more privacy, enter the nearest metro or bus stop instead. Privacy: https://github.com/theo949/life-automation#privacy" Options: "Skip for now" / "Enter it (choose Other and type it)".
 Do not mention scanning or task counts here. Save the answers.
 
 If the address is skipped, say nothing more now (the review skips travel events and says so once).
@@ -138,7 +138,7 @@ Run the `todo-discovery` skill once over the saved lookback window. A new board 
 
 Messages (send each with SendUserMessage or as the end of a turn):
 - When the scan starts: "Looking through your last [lookback] of email for things you need to do. I'll add at most 15 so your board isn't flooded. This usually takes a few minutes, so feel free to grab a coffee."
-- Found tasks: "Found [N] possible tasks. I've put them in a list called Proposed on your board. Nothing is final until you approve it."
+- Found tasks: "Found [N] possible tasks. I've put them in a list called Proposed on your board. Nothing is final until you approve them." (If N is 1: "Found 1 possible task. I've put it in a list called Proposed on your board. Nothing is final until you approve it.")
 - Found nothing: "I didn't find anything that looks like a task in the last [lookback]. That's fine, your board is ready. You can add a card yourself, or widen the lookback to a month."
 
 ### D. Schedule (paid path only; after A, B and C are done)
