@@ -34,7 +34,8 @@ Goal: take a new user from nothing to a working daily task review in as few scre
 ### 0. Silent checks (tool calls only, no text)
 1. Read /areas/life-automation.md. Resume if it has answers and a stage.
 2. Plan check: see whether scheduling tools exist (search the available tools for creating and listing scheduled tasks; do not create a test task). Tools present: paid path. Absent: non-paid path. Never ask the user which plan they have. Save `plan_type` (scheduled or manual).
-3. Detect the user's time zone from the conversation context. Never take it from Trello. If you cannot detect it, ask in the timing step (or, on the non-paid path, skip it: the review uses the zone from the conversation).
+3. Connector check, in the SAME parallel batch as items 1 and 2: one ToolSearch per connector (queries "trello", "gmail", "drive", "sheets", "calendar"). Tools found for it = connected. Nothing found, an error or an unclear result = not connected. Keep the result in your notes for step 2. This is a read-only check: do not call Gmail, Trello or Drive here.
+4. Detect the user's time zone from the conversation context. Never take it from Trello. If you cannot detect it, ask in the timing step (or, on the non-paid path, skip it: the review uses the zone from the conversation).
 
 ### 1. Intro
 One dialog. Put a blank line between the paragraphs. Question text (paid path):
@@ -58,9 +59,11 @@ Question text (non-paid path): the same paragraphs down to "What you need" (but 
 Options: "Start setup" / "Not now". On "Not now", stop politely.
 
 ### 2. Check the connectors
-Save `setup_stage` = connectors. Check what is connected: in ONE parallel batch, run one ToolSearch per connector (queries "trello", "gmail", "drive", "sheets", "calendar"). Tools found for it = connected. Nothing found, an error or an unclear result = not connected. This is a read-only check: do not call Gmail, Trello or Drive here. Required: Trello, Gmail, Google Drive and Sheets. Optional: Google Calendar.
+Save `setup_stage` = connectors. Required: Trello, Gmail, Google Drive and Sheets. Optional: Google Calendar.
 
-This step ALWAYS ends with the dialog below, even when every search came back empty or failed. Never end the turn without it. If you cannot tell whether a connector is connected, show it as not connected.
+**Use the check from step 0. Make no tool calls for this screen** (apart from saving `setup_stage` in the same turn, if you must; do it before writing the screen). Your reply to "Start setup" is the connectors screen, written as the text of that reply. Never end this reply after tool calls without the screen: if you notice you have just run tool calls and written nothing, write the screen now. If you cannot tell whether a connector is connected, show it as not connected.
+
+On "I've connected it/them": run the connector check again (the same parallel ToolSearch batch), then, as your final text after the results, show this screen again with the new results (or the verify screen, if nothing is missing now). A re-check never ends a turn.
 
 Show one dialog. Question text: "Checking your connections…", then one line per connector in this order, with a blank line before the last paragraph:
 - Connected: "✓ [name]"
