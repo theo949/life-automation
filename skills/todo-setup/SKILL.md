@@ -14,6 +14,8 @@ Goal: take a new user from nothing to a working daily task review in as few scre
   2. As a status message sent with the SendUserMessage tool (if you have it), or as the last text of your turn with no tool call after it.
 - Do all tool calls for a step first, then show the screen. Never write a screen and then call a tool in the same turn.
 - Use the same dialog style for every question (buttons plus the built-in "Other" box for typing). Do not ask a question as plain prose.
+- **Typed fallback.** If AskUserQuestion is not available or fails (for example on the web), show the same copy as a normal message with a numbered menu (1, 2, 3) in place of the buttons, and wait for the user to type a number or their own answer. Never leave a screen undisplayed because a dialog tool is missing.
+- **Never end a turn without the screen the step calls for.** Do not write narration such as "Checking which connectors are available" and then stop. If a check fails or is unclear, show the screen anyway, using the safe assumption written in that step.
 - Copy is fixed. Use the wording below as written. Do not reword, expand or merge it.
 
 
@@ -56,7 +58,9 @@ Question text (non-paid path): the same paragraphs down to "What you need" (but 
 Options: "Start setup" / "Not now". On "Not now", stop politely.
 
 ### 2. Check the connectors
-Save `setup_stage` = connectors. Check what is connected (look at the available tools; this is a read-only check, not a call to Gmail, Trello or Drive). Required: Trello, Gmail, Google Drive and Sheets. Optional: Google Calendar.
+Save `setup_stage` = connectors. Check what is connected: in ONE parallel batch, run one ToolSearch per connector (queries "trello", "gmail", "drive", "sheets", "calendar"). Tools found for it = connected. Nothing found, an error or an unclear result = not connected. This is a read-only check: do not call Gmail, Trello or Drive here. Required: Trello, Gmail, Google Drive and Sheets. Optional: Google Calendar.
+
+This step ALWAYS ends with the dialog below, even when every search came back empty or failed. Never end the turn without it. If you cannot tell whether a connector is connected, show it as not connected.
 
 Show one dialog. Question text: "Checking your connections…", then one line per connector in this order, with a blank line before the last paragraph:
 - Connected: "✓ [name]"
