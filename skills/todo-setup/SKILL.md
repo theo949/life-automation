@@ -16,6 +16,7 @@ Goal: take a new user from nothing to a working daily task review in as few scre
 - Use the same dialog style for every question (buttons plus the built-in "Other" box for typing). Do not ask a question as plain prose.
 - **Typed fallback.** If AskUserQuestion is not available or fails (for example on the web), show the same copy as a normal message with a numbered menu (1, 2, 3) in place of the buttons, and wait for the user to type a number or their own answer. Never leave a screen undisplayed because a dialog tool is missing.
 - **Never end a turn without the screen the step calls for.** Do not write narration such as "Checking which connectors are available" and then stop. If a check fails or is unclear, show the screen anyway, using the safe assumption written in that step.
+- **Every dialog needs two to four options.** A dialog with one option is rejected and the screen never appears. If a step lists a single option, add "Not now" as the second. If a dialog call returns an error, show the same screen at once as a normal message with a numbered menu and never end the turn without it.
 - Copy is fixed. Use the wording below as written. Do not reword, expand or merge it.
 
 
@@ -75,7 +76,7 @@ Show one dialog. Question text: "Checking your connections…", then one line pe
 - If something is missing, end with: "How to connect: open Settings → Customize → Connectors, find each one in the list and press Connect. Sign in when asked, then come back here." (Say "it" instead of "each one" if only one is missing.)
 - If nothing is missing, end with: "Everything I need is connected."
 
-Options: "Continue" if nothing is missing. Otherwise "I've connected it" (or "I've connected them"), plus "Skip Calendar" only if Calendar is the only one missing. On "I've connected…", check again; if a required one is still missing, show the same dialog once more naming only what is missing. Do not continue until the required connectors are connected.
+Options (always at least two): if nothing is missing, "Continue" and "Not now". Otherwise "I've connected it" (or "I've connected them") and "Not now", plus "Skip Calendar" only if Calendar is the only one missing. On "Not now", say you'll pick it up next time they type /todo, and stop. On "I've connected…", check again; if a required one is still missing, show the same dialog once more naming only what is missing. Do not continue until the required connectors are connected.
 
 ### 3. Verify (only if something was missing at step 2)
 Do one tiny read on each required connector, nothing changed: Trello (read the current member), Gmail (list labels), Google Drive and Sheets (search for the sheet titled "Life Automation Log"). Do these tool calls first, then show one dialog. Question text:
@@ -87,7 +88,7 @@ Do one tiny read on each required connector, nothing changed: Trello (read the c
 >
 > All set. If one ever shows a sign-in problem, I'll say which and send you back to Settings → Customize → Connectors.
 
-Option: "Continue". If a read fails, show that line as "[name]: sign-in problem", replace the last paragraph with the "How to connect" line from step 2, and offer "I've fixed it" (check again). Do not continue until all three work.
+Options: "Continue" and "Not now". If a read fails, show that line as "[name]: sign-in problem", replace the last paragraph with the "How to connect" line from step 2, and offer "I've fixed it" (check again). Do not continue until all three work.
 
 ## Phase 2: Questions
 
