@@ -13,7 +13,7 @@ To add a connector, open **Settings → Customize → Connectors**, find it in t
 
 ## Install
 
-**In the Claude app:** Settings → Customize → Plugins → Add → Add from a repository, then enter `theo949/life-automation` and install Life Automation.
+**In the Claude app:** Settings → Customize → Plugins → Add → Add marketplace, then enter `theo949/life-automation` as the marketplace. Then open Discover, find Life Automation and install it.
 
 **In Claude Code:**
 
