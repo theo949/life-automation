@@ -8,7 +8,7 @@ description: "Log a pasted text message, call note or screenshot onto the right 
 People reply outside email (text, WhatsApp, calls). This skill puts those replies on the right card on the user's Life Automation board so they are not lost, and wakes the card if it was waiting for that reply.
 
 ## Trigger
-A message that starts with `tc:`. Everything after it is content for Trello. Words the user types before the pasted text are hints (a name, a card topic), e.g. `tc: Maria, car seat: <pasted text>`. The content can be pasted text or a screenshot. If it is a screenshot, read the text from it; if it cannot be read, say so and ask for the text.
+A message that starts with `tc:`. Everything after it is content for Trello. Words the user types before the pasted text are hints (a name, a card topic), e.g. `tc: Anna, car seat: <pasted text>`. The content can be pasted text or a screenshot. If it is a screenshot, read the text from it; if it cannot be read, say so and ask for the text.
 
 This is an explicit instruction to write to Trello, so no extra confirmation is needed for the comment, the People update or the wake-up described below. Anything else (sending a message, creating a calendar event, changing a due date) still needs the user's yes.
 

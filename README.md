@@ -11,6 +11,23 @@ Life Automation turns your inbox into a Trello to-do board and walks you through
 
 To add a connector, open **Settings → Customize → Connectors**, find it in the list and press **Connect**.
 
+### Permissions to allow
+
+Each connector asks you to approve what Claude may do. Here is what to tick and why.
+
+- **Trello:** pick your workspace, and leave both **Read** ("Let AI agents view your existing work and use it as context, without creating or changing anything") and **Write** ("Let AI agents create and update work on your behalf, using the same permissions you already have") checked. Setup needs both to build your board. If the workspace list says "No workspace available", create a free workspace at trello.com first. Being a guest on someone else's board isn't enough.
+- **Gmail:** tick the first two boxes.
+  - "View your email messages and settings." Used to find to-dos in your email.
+  - "Manage drafts and send emails." Used to send the emails you approve.
+
+  The third box, "Read, compose and send emails from your Gmail account", isn't needed. It appears because the Gmail connector is general-purpose, with actions like labeling and trashing that Life Automation never uses. Life Automation never labels, archives or deletes email, and never sends without showing you the exact text first.
+- **Google Drive:** tick both boxes.
+  - "See and download all your Google Drive files." Read-only. Used to open Google Docs, Sheets and files linked on your Trello cards, so the review can tell you what changed in them and prepare the card ahead of time. It reads these files and never changes them.
+  - "See, edit, create and delete only the specific Google Drive files that you use with this app." Limited to files Claude itself creates or opens. Used to create your Life Automation Log sheet and keep it up to date, and to create the Google Docs that longer `#offline` research results are saved in. It doesn't touch your other files, and Life Automation never deletes anything.
+
+  The second box alone is enough for setup and the daily run, and is the more private choice. Without the first, Claude can't read Google files linked on your cards, so the review skips them and you open those files yourself. For the full experience, tick both.
+- **Google Sheets:** allow what is asked.
+
 ## Install
 
 **In the Claude app:** Settings → Customize → Plugins → Add → Add marketplace, then enter `theo949/life-automation` as the marketplace. Then open Discover, find Life Automation and install it.
@@ -45,6 +62,30 @@ At your review time, Claude shows a short brief. Type `/todo` to go through your
 - Review a few cards at a time and stop when you like. Your place is saved.
 - A paid plan with scheduled tasks does the prep before you sit down, so the review opens quickly.
 
+## What Claude writes on your cards
+
+Open a card in Trello after a review and you'll see two kinds of notes from Claude. They make each review faster and show you what happened and why.
+
+**The metadata block.** At the bottom of a card's description, Claude keeps a block of what it has learned about the card: the people involved, linked documents, calendar events, related emails and other links. Your own notes stay above it. Claude only changes what is inside the block and never the text above it. For example:
+
+```
+--- 🤖 Claude metadata ---
+Last updated: 2026-11-18
+People:
+- Dr. Petrova <clinic@example.com>, dentist
+Events:
+- 2026-11-25 11:00: Dentist follow-up | https://calendar.google.com/...
+Emails:
+- Dentist confirmed the follow-up (Nov 17): https://mail.google.com/...
+--- end ---
+```
+
+The sections are People, Documents, Events, Emails and Others, always in that order. A section with nothing in it is left out. While a card is snoozed, the block also holds the snooze date and the list the card returns to. On a paid plan the prep helper fills the block in ahead of time. Without it, the review fills it in as you reach each card. Leave the block to Claude and write your own notes above it, because Claude rewrites the block when it next updates the card.
+
+**Comments.** When something happens to a card, Claude adds a short dated comment. For example, "Snoozed until 2026-11-25", "Meeting happened, work done", or a note on what is still left to do. You get a history of the card in Trello itself.
+
+**What stays under your control.** Titles, due dates, checklists, labels and lists change only when you say yes during a review. Claude shows you what it wants to change and waits for your answer.
+
 ## Commands
 
 | Command | What it does |
@@ -68,7 +109,7 @@ At your review time, Claude shows a short brief. Type `/todo` to go through your
 
 ## Usage
 
-Like any skill, Life Automation uses your Claude plan's usage, so check it now and then. The first email scan is the biggest.
+On a paid plan, Life Automation uses your Claude plan's usage, so check Settings → Usage now and then. The first email scan is the biggest. On a free plan you can't see your usage. You'll know you've hit the limit when Claude says you're out of messages until a set time. Your place is saved: setup and reviews pick up where they stopped, so wait for the reset and type `/todo`.
 
 ## Skills in this plugin
 
