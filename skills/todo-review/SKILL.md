@@ -36,7 +36,7 @@ A card is finished only when the user chooses a finishing option in the check-in
 - **Proposed list:** filled each morning by the discovery helper, which scans the user's Gmail for emails that need action and adds one card per email. Proposed cards are suggestions, not tasks yet: they are not part of the Step 0 order, are never snoozed, and are only handled in Step 2c. If the list is missing, create it at the right end of the board and say so in the brief.
 - **Snoozed lists:** three lists, side by side and in this order: `Snoozed/Waiting this week`, `Snoozed/Waiting next week`, `Snoozed/Waiting later`. Every snoozed card lives in exactly one of them, picked by its `Snoozed until` date (see **Snoozed buckets**). "The Snoozed lists" in this skill means all three. If one is missing, create it next to the others and say so in the brief.
 - Stale = no activity in 7+ days.
-- Tools: Trello (cards and lists), Gmail, Google Calendar (optional), Google Drive and Sheets, scheduled tasks (paid plans only), Claude memory, a browser (optional, for public transport times).
+- Tools: Trello (cards and lists), Gmail, Google Calendar (optional), Google Drive, Google Sheets, scheduled tasks (paid plans only), Claude memory, a browser (optional, for public transport times).
 
 ## Showing text (so it isn't collapsed)
 In some places (e.g. the Chrome side panel), text written between tool calls gets collapsed into a one-line progress summary that the user can't read without clicking. So:

@@ -35,7 +35,7 @@ Goal: take a new user from nothing to a working daily task review in as few scre
 ### 0. Silent checks (tool calls only, no text)
 1. Read /areas/life-automation.md. Resume if it has answers and a stage. **Memory check:** memory is ON if you can read and write memory files (a missing settings file just means a new user). If you have no memory tools, or they report that memory is off or unavailable, memory is OFF: keep that in your notes for step 2 and do not try to save anything until it is on.
 2. Plan check: see whether scheduling tools exist (search the available tools for creating and listing scheduled tasks; do not create a test task). Tools present: paid path. Absent: non-paid path. Never ask the user which plan they have. Save `plan_type` (scheduled or manual).
-3. Connector check, in the SAME parallel batch as items 1 and 2: one ToolSearch per connector (queries "trello", "gmail", "drive", "sheets", "calendar"), each with `max_results` 1, because this only checks that the connector exists and must not load its tools. Tools found for it = connected. Nothing found, an error or an unclear result = not connected. Keep the result in your notes for step 2. This is a read-only check: do not call Gmail, Trello or Drive here.
+3. Connector check, in the SAME parallel batch as items 1 and 2: one ToolSearch per connector (queries "trello", "gmail", "drive", "sheets", "calendar"), each with `max_results` 1, because this only checks that the connector exists and must not load its tools. Tools found for it = connected, but only if a returned tool belongs to that connector (a Google Sheets tool for Sheets, a Google Drive tool for Drive); a tool of another connector does not count. Nothing found, an error or an unclear result = not connected. Keep the result in your notes for step 2. This is a read-only check: do not call Gmail, Trello or Drive here.
 4. Detect the user's time zone from the conversation context. Never take it from Trello. If you cannot detect it, ask in the timing step (or, on the non-paid path, skip it: the review uses the zone from the conversation).
 
 ### 1. Intro
@@ -50,7 +50,7 @@ One dialog. Put a blank line between the paragraphs. Question text (paid path):
 >
 > What I never do: send an email without showing you the exact text first.
 >
-> What you need: a Trello account (the free plan is fine), Claude's memory turned on, and these connectors: Trello, Gmail, Google Drive and Sheets. Google Calendar is optional. I'll check them in a moment and show you how to fix any that are missing.
+> What you need: a Trello account (the free plan is fine), Claude's memory turned on, and these connectors: Trello, Gmail, Google Drive and Google Sheets. Google Calendar is optional. I'll check them in a moment and show you how to fix any that are missing.
 >
 > Heads up: this uses your Claude plan's usage, and the first email scan is the biggest. The worst that can happen is you hit your limit and runs pause until it resets. You can pause the schedule any time with /todo pause.
 
@@ -60,22 +60,23 @@ Question text (non-paid path): the same paragraphs down to "What you need" (but 
 Options: "Start setup" / "Not now". On "Not now", stop politely.
 
 ### 2. Check the connectors
-Save `setup_stage` = connectors. Required: Trello, Gmail, Google Drive and Sheets, and Claude memory. Optional: Google Calendar. If memory is off, do not save `setup_stage` yet (it cannot be saved); save everything once memory is on.
+Save `setup_stage` = connectors. Required: Trello, Gmail, Google Drive, Google Sheets (a separate connector from Drive) and Claude memory. Optional: Google Calendar. If memory is off, do not save `setup_stage` yet (it cannot be saved); save everything once memory is on.
 
 **Use the check from step 0. Make no tool calls for this screen** (apart from saving `setup_stage` in the same turn, if you must; do it before writing the screen). Your reply to "Start setup" is the connectors screen, written as the text of that reply. Never end this reply after tool calls without the screen: if you notice you have just run tool calls and written nothing, write the screen now. If you cannot tell whether a connector is connected, show it as not connected.
 
 On "I've connected it/them" or "I've turned it on": run the connector check and the memory check again (the same parallel ToolSearch batch), then, as your final text after the results, show this screen again with the new results (or, if nothing is missing now, go on to step 3). A re-check never ends a turn.
 
-Show one dialog. Question text: "Checking your connections…", then one line per item in this order (Trello, Gmail, Google Drive and Sheets, Claude memory, Google Calendar), with a blank line before the last paragraph:
+Show one dialog. Question text: "Checking your connections…", then one line per item in this order (Trello, Gmail, Google Drive, Google Sheets, Claude memory, Google Calendar), with a blank line before the last paragraph:
 - Connected: exactly "✓ [name]", with nothing after the name (no reason)
 - Missing: "[name] (not connected): [reason]", using these reasons:
   - Trello: Where your tasks live. You can sign up for free at trello.com.
   - Gmail: How I spot the to-dos in your email.
-  - Google Drive and Sheets: Where I keep data about your tasks, so everything runs smoother.
+  - Google Drive: Lets me open the documents linked on your tasks.
+  - Google Sheets: Where I keep data about your tasks, so everything runs smoother.
   - Claude memory: Life Automation learns how you work, like who to ignore and who matters most, and saves your settings. It needs Claude's memory for that.
   - Google Calendar (optional): Lets me add calendar events for your tasks.
 - If a connector is missing, end with: "How to connect: open Settings → Customize → Connectors, find each one in the list and press Connect. Sign in when asked, then come back here." (Say "it" instead of "each one" if only one is missing.)
-  Then, after a blank line, add the permissions paragraph and show only the sentences for the connectors that are missing (not Calendar): "When asked for permissions:" followed by the sentences "For Trello, pick your workspace and keep Read and Write checked." / "For Gmail, tick "View your email messages and settings" and "Manage drafts and send emails"." / "For Google Drive, tick both boxes."
+  Then, after a blank line, add the permissions paragraph and show only the sentences for the connectors that are missing (not Calendar): "When asked for permissions:" followed by the sentences "For Trello, pick your workspace and keep Read and Write checked." / "For Gmail, tick "View your email messages and settings" and "Manage drafts and send emails"." / "For Google Drive, tick both boxes." / "For Google Sheets, allow \"See, edit, create and delete all your Google Sheets spreadsheets\"."
 - If Claude memory is missing, add this paragraph (after a blank line, after any connector paragraphs): "To turn on memory, open Settings → Your Claude → Memory and switch on "Generate memory from chats". Then come back here." Memory shows as "Claude memory (not turned on): [reason]" (use "not turned on", not "not connected").
 - If only Calendar is missing, skip the "How to connect" line and the permissions paragraph and end with: "Everything required is connected. To add Calendar, open Settings → Customize → Connectors, find Google Calendar and press Connect, or skip it and add it any time."
 - If nothing is missing, end with: "Everything I need is connected."
@@ -126,6 +127,8 @@ Load the Trello tools now, not earlier. Find the workspaces the user is a member
 Trello creates a new board with its own default lists (To Do, Doing, Done). Remove or archive those so only the seven above remain. Set `pos` to 1 through 7 in the order above. Use as few calls as possible: if the board-creation tool accepts lists, create the seven with it; otherwise create all seven lists in one parallel batch and archive the three default lists in the same batch. Do not create labels (the connector cannot, and the product does not use them).
 
 ### B. Log sheet
+This step needs Google Sheets tools. If you have none when you reach it, stop here: say that Google Sheets is not connected, show the "How to connect" line and the Sheets permission sentence from step 2, keep `setup_stage` = build, and do not run the scan or finish setup. Never say you are reusing a log sheet that you could not read.
+
 First search Drive for a sheet titled "Life Automation Log". If one exists, ask: "I found a log sheet from an earlier setup. Use it or start fresh?" Options: Use it / Start fresh. On Use it, reuse it. On Start fresh, create a new one and tell the user to delete the old one. If none exists, create a Google Sheet titled "Life Automation Log" with these tabs and header rows (row 1). Paid path: all six tabs. Non-paid path: only `Card index`, `Card news` and `Proposals`; the other three are added later by the helpers that use them, if they are missing.
 - `Card index`: card_id, title, list, people_emails, thread_ids_hex, last_updated, refreshed_date
 - `Card news`: found_date, thread_id, last_msg_date, card_id, sender_domain, category, needs_action, notes
@@ -137,7 +140,7 @@ First search Drive for a sheet titled "Life Automation Log". If one exists, ask:
 Keep IDs and dates as text. Do not mention the log sheet's contents to the user beyond "your log sheet".
 
 ### C. First scan
-Run the `todo-discovery` skill once over the saved lookback window. A new board has no cards, so do NOT run the prioritizer now. Tell the discovery run it is the first scan during setup: it should do the Gmail scan first, then wait until the board and its Proposed list exist (look them up by name) before creating any cards, with a cap of 15 proposals.
+Run the `todo-discovery` skill once over the saved lookback window, only if the log sheet exists and you can write to it; the scan keeps its records there. If not, skip the scan, say so in one line and keep `setup_stage` = build. A new board has no cards, so do NOT run the prioritizer now. Tell the discovery run it is the first scan during setup: it should do the Gmail scan first, then wait until the board and its Proposed list exist (look them up by name) before creating any cards, with a cap of 15 proposals.
 
 Messages (send each with SendUserMessage or as the end of a turn):
 - When the scan starts: "Looking through your last [lookback] of email for things you need to do. I'll add at most 15 so your board isn't flooded. This usually takes a few minutes, so feel free to grab a coffee."
