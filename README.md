@@ -5,11 +5,25 @@ Life Automation turns your inbox into a Trello to-do board and walks you through
 ## What you need
 
 - A Trello account (the free plan works)
+- Claude's memory turned on (Settings → Your Claude → Memory → "Generate memory from chats"). See [Claude memory](#claude-memory) below.
 - These connectors in Claude: **Trello**, **Gmail**, **Google Drive and Sheets**
 - Optional: **Google Calendar**, so tasks can become calendar events
 - Optional: a Claude plan with scheduled tasks, so the daily prep runs before you wake up. Without it, you run `/todo` by hand and each run starts with a quick scan of your email.
 
 To add a connector, open **Settings → Customize → Connectors**, find it in the list and press **Connect**.
+
+### Claude memory
+
+Life Automation needs Claude's memory turned on. It keeps two things there.
+
+- **Your settings:** your review time and days, time zone, email lookback, home address (if you give one), whether you're on a plan with scheduled tasks, and which setup step you reached, so an interrupted setup can continue.
+- **What it learns about you:** senders to ignore, people who matter most, the language to use with a recipient, and how you like cards handled. This is what makes the reviews better over time.
+
+The scheduled helpers on paid plans run on their own, in a new session each time, and read the same saved settings. Without memory they can't know your review time or lookback.
+
+To turn it on, open **Settings → Your Claude → Memory** and switch on **Generate memory from chats**. Then type `/todo`, or `/todo setup` if setup already started.
+
+That switch lets Claude generate memory from all your chats, not only Life Automation. To limit it, open **Your memory → Manage** to see, edit or delete anything Claude has saved. Life Automation only needs its own entries, named "Life Automation settings" and "Life Automation learnings". Your home address is saved there, never in Trello or your sheet.
 
 ### Permissions to allow
 

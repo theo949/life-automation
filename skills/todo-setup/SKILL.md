@@ -33,7 +33,7 @@ Goal: take a new user from nothing to a working daily task review in as few scre
 ## Phase 1: Connectors
 
 ### 0. Silent checks (tool calls only, no text)
-1. Read /areas/life-automation.md. Resume if it has answers and a stage.
+1. Read /areas/life-automation.md. Resume if it has answers and a stage. **Memory check:** memory is ON if you can read and write memory files (a missing settings file just means a new user). If you have no memory tools, or they report that memory is off or unavailable, memory is OFF: keep that in your notes for step 2 and do not try to save anything until it is on.
 2. Plan check: see whether scheduling tools exist (search the available tools for creating and listing scheduled tasks; do not create a test task). Tools present: paid path. Absent: non-paid path. Never ask the user which plan they have. Save `plan_type` (scheduled or manual).
 3. Connector check, in the SAME parallel batch as items 1 and 2: one ToolSearch per connector (queries "trello", "gmail", "drive", "sheets", "calendar"), each with `max_results` 1, because this only checks that the connector exists and must not load its tools. Tools found for it = connected. Nothing found, an error or an unclear result = not connected. Keep the result in your notes for step 2. This is a read-only check: do not call Gmail, Trello or Drive here.
 4. Detect the user's time zone from the conversation context. Never take it from Trello. If you cannot detect it, ask in the timing step (or, on the non-paid path, skip it: the review uses the zone from the conversation).
@@ -50,7 +50,7 @@ One dialog. Put a blank line between the paragraphs. Question text (paid path):
 >
 > What I never do: send an email without showing you the exact text first.
 >
-> What you need: a Trello account (the free plan is fine) and these connectors: Trello, Gmail, Google Drive and Sheets. Google Calendar is optional. I'll check them in a moment and show you where to connect any that are missing.
+> What you need: a Trello account (the free plan is fine), Claude's memory turned on, and these connectors: Trello, Gmail, Google Drive and Sheets. Google Calendar is optional. I'll check them in a moment and show you how to fix any that are missing.
 >
 > Heads up: this uses your Claude plan's usage, and the first email scan is the biggest. The worst that can happen is you hit your limit and runs pause until it resets. You can pause the schedule any time with /todo pause.
 
@@ -60,25 +60,27 @@ Question text (non-paid path): the same paragraphs down to "What you need" (but 
 Options: "Start setup" / "Not now". On "Not now", stop politely.
 
 ### 2. Check the connectors
-Save `setup_stage` = connectors. Required: Trello, Gmail, Google Drive and Sheets. Optional: Google Calendar.
+Save `setup_stage` = connectors. Required: Trello, Gmail, Google Drive and Sheets, and Claude memory. Optional: Google Calendar. If memory is off, do not save `setup_stage` yet (it cannot be saved); save everything once memory is on.
 
 **Use the check from step 0. Make no tool calls for this screen** (apart from saving `setup_stage` in the same turn, if you must; do it before writing the screen). Your reply to "Start setup" is the connectors screen, written as the text of that reply. Never end this reply after tool calls without the screen: if you notice you have just run tool calls and written nothing, write the screen now. If you cannot tell whether a connector is connected, show it as not connected.
 
-On "I've connected it/them": run the connector check again (the same parallel ToolSearch batch), then, as your final text after the results, show this screen again with the new results (or, if nothing is missing now, go on to step 3). A re-check never ends a turn.
+On "I've connected it/them" or "I've turned it on": run the connector check and the memory check again (the same parallel ToolSearch batch), then, as your final text after the results, show this screen again with the new results (or, if nothing is missing now, go on to step 3). A re-check never ends a turn.
 
-Show one dialog. Question text: "Checking your connections…", then one line per connector in this order, with a blank line before the last paragraph:
+Show one dialog. Question text: "Checking your connections…", then one line per item in this order (Trello, Gmail, Google Drive and Sheets, Claude memory, Google Calendar), with a blank line before the last paragraph:
 - Connected: exactly "✓ [name]", with nothing after the name (no reason)
 - Missing: "[name] (not connected): [reason]", using these reasons:
   - Trello: Where your tasks live. You can sign up for free at trello.com.
   - Gmail: How I spot the to-dos in your email.
   - Google Drive and Sheets: Where I keep data about your tasks, so everything runs smoother.
+  - Claude memory: Life Automation learns how you work, like who to ignore and who matters most, and saves your settings. It needs Claude's memory for that.
   - Google Calendar (optional): Lets me add calendar events for your tasks.
-- If something is missing, end with: "How to connect: open Settings → Customize → Connectors, find each one in the list and press Connect. Sign in when asked, then come back here." (Say "it" instead of "each one" if only one is missing.)
+- If a connector is missing, end with: "How to connect: open Settings → Customize → Connectors, find each one in the list and press Connect. Sign in when asked, then come back here." (Say "it" instead of "each one" if only one is missing.)
   Then, after a blank line, add the permissions paragraph and show only the sentences for the connectors that are missing (not Calendar): "When asked for permissions:" followed by the sentences "For Trello, pick your workspace and keep Read and Write checked." / "For Gmail, tick "View your email messages and settings" and "Manage drafts and send emails"." / "For Google Drive, tick both boxes."
+- If Claude memory is missing, add this paragraph (after a blank line, after any connector paragraphs): "To turn on memory, open Settings → Your Claude → Memory and switch on "Generate memory from chats". Then come back here." Memory shows as "Claude memory (not turned on): [reason]" (use "not turned on", not "not connected").
 - If only Calendar is missing, skip the "How to connect" line and the permissions paragraph and end with: "Everything required is connected. To add Calendar, open Settings → Customize → Connectors, find Google Calendar and press Connect, or skip it and add it any time."
 - If nothing is missing, end with: "Everything I need is connected."
 
-Options (always at least two): if nothing is missing, "Continue" and "Not now". Otherwise "I've connected it" (or "I've connected them") and "Not now", plus "Skip Calendar" only if Calendar is the only one missing. On "Not now", say you'll pick it up next time they type /todo, and stop. On "I've connected…", check again; if a required one is still missing, show the same dialog once more naming only what is missing. Do not continue until the required connectors are connected.
+Options (always at least two): if nothing is missing, "Continue" and "Not now". Otherwise "I've connected it" (or "I've connected them"; if only memory is missing, "I've turned it on") and "Not now", plus "Skip Calendar" only if Calendar is the only one missing. On "Not now", say you'll pick it up next time they type /todo, and stop. On "I've connected…" or "I've turned it on", check again (for memory, try to read and write the settings file). If memory still looks off right after they turned it on, say it may need a new chat to take effect and ask them to type /todo in a new chat. If a required one is still missing, show the same dialog once more naming only what is missing. Do not continue until the required connectors are connected.
 
 ### 3. Verify (only if something was missing at step 2)
 Do one tiny read on Trello (read the current member). Show no screen. Do not read Gmail, Drive or Sheets here: they are used in the build, where a failure is reported. If the read works, go straight to Phase 2. If it fails, show one dialog. Question text: "Trello: sign-in problem." followed by the "How to connect" line from step 2. Options: "I've fixed it" (check again) and "Not now". Do not continue until Trello works.

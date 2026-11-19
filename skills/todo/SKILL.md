@@ -10,7 +10,7 @@ This skill only decides where to go. It does no review work itself.
 ## Step 1: Find the saved config
 
 1. Read the memory file "Life Automation settings" (path: /areas/life-automation.md). It holds: review time, days, time zone, email lookback, home address (optional), plan type (scheduled or manual), Trello board name, log sheet name.
-2. If the file has a `setup_stage` that is not `done` (setup was interrupted, for example by a message limit), invoke `todo-setup` to resume it. Otherwise, if the file has a board name and a sheet name, treat the user as configured.
+2. If you cannot read memory at all because memory is turned off (no memory tools, or they report it is off), do not look further: invoke `todo-setup` at once. Its connectors screen explains how to turn memory on. Otherwise, if the file has a `setup_stage` that is not `done` (setup was interrupted, for example by a message limit), invoke `todo-setup` to resume it. Otherwise, if the file has a board name and a sheet name, treat the user as configured.
 3. If the file is missing or incomplete, first check which connectors exist (one ToolSearch each for "trello" and "drive", in one parallel batch, each with `max_results` 1 so no tools are loaded). If Trello or Google Drive is not connected, skip the lookup below, because it cannot work: invoke `todo-setup` at once. Its welcome screen explains what is needed and its connectors check shows the user what to connect. Otherwise run the lookup fallback before concluding they are new:
    - Trello: search for a board named "Life Automation" (trelloSearch).
    - Drive: search for a sheet titled "Life Automation Log".
