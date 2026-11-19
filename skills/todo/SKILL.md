@@ -40,7 +40,7 @@ The review runs at T. The helpers run before it, in this order, because discover
 - prep at T minus 45 minutes
 
 ## Manual runs (non-paid plans)
-There is no schedule, so before the review do the helpers' work inline, in this order: (1) invoke `todo-prioritizer` to rank the cards and refresh the Card index tab, (2) invoke `todo-discovery` to scan Gmail over the saved lookback and fill the Proposed list. Skip prep. Tell the user in one line that this takes a minute or two, then start the review.
+There is no schedule, so before the review do the helpers' work inline, in this order: (1) invoke `todo-prioritizer` to rank the cards and refresh the Card index tab, (2) invoke `todo-discovery` to scan Gmail (it picks its own window: since the last review, 1 to 7 days) and fill the Proposed list. Skip prep. Tell the user in one line that this takes a minute or two, then start the review.
 
 ## Rules
 

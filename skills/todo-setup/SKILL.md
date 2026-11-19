@@ -54,7 +54,7 @@ One dialog. Put a blank line between the paragraphs. Question text (paid path):
 >
 > Heads up: this uses your Claude plan's usage, and the first email scan is the biggest. The worst that can happen is you hit your limit and runs pause until it resets. You can pause the schedule any time with /todo pause.
 
-Question text (non-paid path): the same paragraphs down to "What you need" (but "What I create: a Trello board (cards and comments) and a Google Sheet log."), then:
+Question text (non-paid path): the same paragraphs down to "What you need", but with "What I read: the last 7 days of your Primary email, plus bills, appointments and similar mail in your Updates tab (searched in English), your Trello board, and (optionally) your calendar." and "What I create: a Trello board (cards and comments) and a Google Sheet log.", then:
 > On a free plan things may run a bit slower. Give it a try, and if it feels too slow, the README has suggestions: https://github.com/theo949/life-automation#readme
 
 Options: "Start setup" / "Not now". On "Not now", stop politely.
@@ -111,8 +111,8 @@ One dialog with three questions. Start the dialog with this paragraph:
 Save the answers.
 
 ### 5. Lookback and home address
-One dialog with two questions:
-- "How far back should I look in your email for to-dos?" Paid path options: 1 week (recommended) / 2 weeks / 1 month. Non-paid path options: 3 days (recommended) / 1 week / 2 weeks, with this line under the question: "On a free plan, a longer lookback can use up your usage quickly, so I suggest starting short. You can widen it later."
+One dialog: two questions on the paid path, only the home address question on the non-paid path.
+- Paid path only: "How far back should I look in your email for to-dos?" Options: 1 week (recommended) / 2 weeks / 1 month. Non-paid path: do not ask. The scan looks at the last 7 days (nothing to save for the lookback; the later runs look back to the last review, 1 to 7 days).
 - "Home address (optional). I use it to work out travel time to your appointments. For more privacy, enter the nearest metro or bus stop instead. Privacy: https://github.com/theo949/life-automation#privacy" Options: "Skip for now" / "Enter it (choose Other and type it)".
 Do not mention scanning or task counts here. Save the answers.
 
@@ -120,7 +120,7 @@ If the address is skipped, say nothing more now (the review skips travel events 
 
 ## Phase 3: Build
 
-Save `setup_stage` = build. As each piece finishes, save it in the memory file as `build_board`, `build_sheet` or `build_scan` = done. On resume, skip every piece that is already done and carry on with the next. Never create a second board, sheet or set of cards. Send one status message: "Setting up your Trello board and log sheet. One moment." Then run the build steps below. Steps A, B and C run at the same time:
+Save `setup_stage` = build. As each piece finishes, save it in the memory file as `build_board`, `build_sheet` or `build_scan` = done. On resume, skip every piece that is already done and carry on with the next. Never create a second board, sheet or set of cards. Send one status message: "Setting up your Trello board and log sheet. One moment. If Claude asks permission to use a connector, choose 'Always allow' so setup doesn't stop and wait." Then run the build steps below. Steps A, B and C run at the same time:
 
 - If you have a way to run work in the background (a subagent), start one to do A and B while you do C. Wait for it before writing any cards.
 - If not, issue A's and B's tool calls in the same turn as C's first Gmail searches, so they run in parallel, and carry on with the scan.
@@ -151,12 +151,12 @@ First search Drive for a sheet titled "Life Automation Log". If one exists, ask:
 Keep IDs and dates as text. Do not mention the log sheet's contents to the user beyond "your log sheet".
 
 ### C. First scan
-Run the `todo-discovery` skill once over the saved lookback window, only if the log sheet exists and you can write to it; the scan keeps its records there. If not, skip the scan, say so in one line and keep `setup_stage` = build. A new board has no cards, so do NOT run the prioritizer now. Tell the discovery run it is the first scan during setup: it should do the Gmail scan first, then wait until the board and its Proposed list exist (look them up by name) before creating any cards, with a cap of 15 proposals.
+Run the `todo-discovery` skill once (the saved lookback window on paid plans, the last 7 days on non-paid plans), only if the log sheet exists and you can write to it; the scan keeps its records there. If not, skip the scan, say so in one line and keep `setup_stage` = build. A new board has no cards, so do NOT run the prioritizer now. Tell the discovery run it is the first scan during setup: it should do the Gmail scan first, then wait until the board and its Proposed list exist (look them up by name) before creating any cards, with a cap of 15 proposals on paid plans and 8 on non-paid plans.
 
 Messages (send each with SendUserMessage or as the end of a turn):
-- When the scan starts: "Looking through your last [lookback] of email for things you need to do. I'll add at most 15 so your board isn't flooded. This usually takes a few minutes, so feel free to grab a coffee."
+- When the scan starts, paid path: "Looking through your last [lookback] of email for things you need to do. I'll add at most 15 so your board isn't flooded. This usually takes a few minutes, so feel free to grab a coffee." Non-paid path: "Looking through your last 7 days of Primary email, plus bills and appointments in your Updates tab, for things you need to do. I'll add at most 8 so your board isn't flooded. This usually takes a few minutes, so feel free to grab a coffee."
 - Found tasks: "Found [N] possible tasks. I've put them in a list called Proposed on your board. Nothing is final until you approve them." (If N is 1: "Found 1 possible task. I've put it in a list called Proposed on your board. Nothing is final until you approve it.")
-- Found nothing: "I didn't find anything that looks like a task in the last [lookback]. That's fine, your board is ready. You can add a card yourself, or widen the lookback to a month."
+- Found nothing: "I didn't find anything that looks like a task in the last [lookback, or "7 days" on the non-paid path]. That's fine, your board is ready. You can add a card yourself[, or widen the lookback to a month (paid path only)]."
 
 ### D. Schedule (paid path only; after A, B and C are done)
 Create four scheduled tasks, each named exactly as below, in the user's time zone, on the chosen days (T is the review time). Reuse any that already exist (update, do not duplicate):
@@ -168,7 +168,7 @@ Create four scheduled tasks, each named exactly as below, in the user's time zon
 Verify each was created by listing scheduled tasks. If a scheduled run later cannot find these skills, the user can still use `/todo`, which always works. If scheduling fails, fall back to the non-paid path and say so in one line.
 
 ### E. Save config
-Write board name, sheet name, times, days, zone, lookback, plan type, `setup_stage` = done and "active" to the memory file. IDs are not trusted; they are always recovered by name.
+Write board name, sheet name, times, days, zone, lookback (paid path only), plan type, `setup_stage` = done and "active" to the memory file. IDs are not trusted; they are always recovered by name.
 
 
 ## Final screen

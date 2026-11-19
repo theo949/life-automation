@@ -70,9 +70,28 @@ On a plan with scheduled tasks, three helpers run in the hour before the review 
 
 At your review time, Claude shows a short brief. Type `/todo` to go through your tasks, then or any time you like. Without scheduled tasks there are no helpers, so each `/todo` run does this prep first and takes a minute or two longer.
 
+## How the email scan works
+
+Most of your inbox is newsletters, notifications and promotions, and reading all of it would use a lot of your Claude usage for almost no tasks. So the scan is selective, the same way on every plan.
+
+- **Primary:** Claude reads every email in the window.
+- **Updates:** Claude only looks at emails that mention words like invoice, bill, payment, due, appointment, deadline, order, receipt or confirmation, plus emails from senders you've turned into tasks before.
+- **Never searched:** Promotions, Social and Forums.
+- **Your replies:** Claude also looks at what you sent, so it doesn't propose a task you've already answered.
+
+How far back it looks depends on your plan.
+
+- **Paid plan:** setup asks how far back to look (1 week, 2 weeks or 1 month) for the first scan, with up to 15 proposals. After that the daily helper looks at the last 3 days (more if a day was missed), up to 10 new proposals a run.
+- **Free plan:** nothing to choose. The first scan looks at the last 7 days, and every later `/todo` looks back to your last review (at least 1 day, at most 7 days), up to 8 new proposals a run.
+
+Two limits to know about:
+
+- **English only.** The Updates keywords are English words. Other languages work at your own risk, and bills or appointments written in another language can be missed in Updates.
+- **Misses are possible.** A bill in Updates with none of those words, from a sender you haven't used before, won't be found. On a free plan, mail older than 7 days that an earlier run didn't catch isn't proposed later. Add the card yourself in Trello.
+
 ## If it feels slow
 
-- Look back a shorter time in your email. The default on a free plan is 3 days.
+- On a free plan the email scan is already kept small: see [How the email scan works](#how-the-email-scan-works).
 - Review a few cards at a time and stop when you like. Your place is saved.
 - A paid plan with scheduled tasks does the prep before you sit down, so the review opens quickly.
 
@@ -110,7 +129,7 @@ The sections are People, Documents, Events, Emails and Others, always in that or
 
 ## What it reads, creates and never does
 
-- **Reads:** your email from the last week or two (you choose how far back), your Trello board and, optionally, your calendar.
+- **Reads:** your recent email (on a paid plan you choose how far back for the first scan, on a free plan it's the last 7 days), your Trello board and, optionally, your calendar. See [How the email scan works](#how-the-email-scan-works).
 - **Creates:** a Trello board with cards and comments, a Google Sheet log and, on paid plans, a daily schedule.
 - **Never:** sends an email without showing you the exact text first.
 
