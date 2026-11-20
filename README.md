@@ -148,7 +148,7 @@ On a paid plan, Life Automation uses your Claude plan's usage, so check Settings
 
 ## Skills in this plugin
 
-`todo` (entry point), `todo-setup`, `todo-review`, `todo-card`, `todo-capture`, and the helpers `todo-prioritizer`, `todo-discovery`, `todo-prep`, `todo-review-rules`, `todo-review-actions`, `todo-review-scan`, `todo-review-meetings`, `todo-review-debug`, `todo-offline`, `todo-missed`, `todo-covers` and `todo-logged`.
+`todo` (entry point), `todo-setup`, `todo-review`, `todo-card`, `todo-capture`, and the helpers `todo-prioritizer`, `todo-discovery`, `todo-prep`, `todo-review-rules`, `todo-review-actions`, `todo-review-scan`, `todo-review-meetings`, `todo-review-debug`, `todo-offline`, `todo-missed` and `todo-logged`.
 
 ## Videos
 

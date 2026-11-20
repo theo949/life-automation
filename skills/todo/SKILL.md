@@ -28,7 +28,7 @@ This skill only decides where to go. It does no review work itself.
 
 **Tool names.** The ToolSearch `select:` lists in this plugin use the usual connector tool names. If a name is not found, search by keywords instead (for example "google sheets get values") and use the tool that comes back; never stop because a name did not match.
 
-**Optional tools.** Bash, the Agent tool, task lists (TaskCreate/TaskUpdate), SendUserMessage and Claude in Chrome are extras, not requirements. If one is not available in this session, do that step yourself in sequence, send the message as a normal reply, skip the progress list, and skip the cover sweep. Never stop or tell the user a tool is missing because of one of these. Only the Trello, Gmail, Google Drive and Google Sheets connectors (and memory) are required.
+**Optional tools.** Bash, the Agent tool, task lists (TaskCreate/TaskUpdate), and SendUserMessage are extras, not requirements. If one is not available in this session, do that step yourself in sequence, send the message as a normal reply, and skip the progress list. Never stop or tell the user a tool is missing because of one of these. Only the Trello, Gmail, Google Drive and Google Sheets connectors (and memory) are required.
 
 ## Step 2: Route
 
@@ -47,9 +47,6 @@ Look at what the user typed after /todo.
 
 ## Opening line
 When a configured user starts the daily review (the "nothing" row above), the very first thing the user sees is this line, exactly: `Rolling up my sleeves for your daily review…`. **Your reply must begin with these exact words, before any tool call and before any other text, in every run, including debug runs.** Never skip it, never replace it with a sentence of your own such as "Starting the debug run…", and never put it after a tool call. Write it as plain chat text at the very start of the first turn, so the screen is never blank while the review loads. It is a line of the first turn, never a turn of its own, and it is not sent again with SendUserMessage. It is the only text this skill writes for that route. Do not write it for any other route. If `todo-logged` already wrote this line as its first text (it does), do not write it a second time.
-
-## After the review: cover sweep
-For the daily review route only (the "nothing" row), once `todo-review` has finished, as the very last step of the run and only in an interactive run (never unattended), invoke `todo-covers`. "Finished" means the closing message was sent after the Write queue flush report, or, when no closing message is due, the wrap-up message and the flush report. `todo-covers` is silent unless it adds covers or something fails, so write nothing yourself. Do not run it when the user stopped before the first card was reviewed. The `card` route does not use this: `todo-card` runs the sweep itself.
 
 ## Timing (paid plans)
 
