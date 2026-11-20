@@ -4,6 +4,8 @@ Life Automation turns your inbox into a Trello to-do board and walks you through
 
 ## What you need
 
+**Where it runs:** the Claude desktop app, claude.ai and the Claude in Chrome side panel. On mobile, reviews work but setup is easier on a computer. Claude Code is not supported.
+
 - A Trello account (the free plan works)
 - Claude's memory turned on (Settings → Your Claude → Memory → "Generate memory from chats"). See [Claude memory](#claude-memory) below.
 - These connectors in Claude: **Trello**, **Gmail**, **Google Drive**, **Google Sheets**

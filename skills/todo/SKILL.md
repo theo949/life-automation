@@ -28,6 +28,8 @@ This skill only decides where to go. It does no review work itself.
 
 **Tool names.** The ToolSearch `select:` lists in this plugin use the usual connector tool names. If a name is not found, search by keywords instead (for example "google sheets get values") and use the tool that comes back; never stop because a name did not match.
 
+**Optional tools.** Bash, the Agent tool, task lists (TaskCreate/TaskUpdate), SendUserMessage and Claude in Chrome are extras, not requirements. If one is not available in this session, do that step yourself in sequence, send the message as a normal reply, skip the progress list, and skip the cover sweep. Never stop or tell the user a tool is missing because of one of these. Only the Trello, Gmail, Google Drive and Google Sheets connectors (and memory) are required.
+
 ## Step 2: Route
 
 Look at what the user typed after /todo.
