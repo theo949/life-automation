@@ -140,13 +140,16 @@ Trello creates a new board with its own default lists (To Do, Doing, Done). Remo
 ### B. Log sheet
 This step needs Google Sheets tools. If you have none when you reach it, stop here: say that Google Sheets is not connected, show the "How to connect" line and the Sheets permission sentence from step 2, keep `setup_stage` = build, and do not run the scan or finish setup. Never say you are reusing a log sheet that you could not read.
 
-First search Drive for a sheet titled "Life Automation Log". If one exists, ask: "I found a log sheet from an earlier setup. Use it or start fresh?" Options: Use it / Start fresh. On Use it, reuse it. On Start fresh, create a new one and tell the user to delete the old one. If none exists, create a Google Sheet titled "Life Automation Log" with these tabs and header rows (row 1). Paid path: all six tabs. Non-paid path: only `Card index`, `Card news` and `Proposals`; the other three are added later by the helpers that use them, if they are missing.
-- `Card index`: card_id, title, list, people_emails, thread_ids_hex, last_updated, refreshed_date
+First search Drive for a sheet titled "Life Automation Log". If one exists, ask: "I found a log sheet from an earlier setup. Use it or start fresh?" Options: Use it / Start fresh. On Use it, reuse it. On Start fresh, create a new one and tell the user to delete the old one. If none exists, create a Google Sheet titled "Life Automation Log" with these tabs and header rows (row 1). Paid path: all nine tabs. Non-paid path: only `Card index`, `Card news`, `Proposals`, `Wake hits` and `Skipped`; the others (`Review prep`, `Brief`, `Timing`, `Card cache`, and `Debug`) are added later by the skills that use them, if they are missing.
+- `Card index`: card_id, title, list, people_emails, thread_ids_hex, last_updated, refreshed_date, events, link_domains
 - `Card news`: found_date, thread_id, last_msg_date, card_id, sender_domain, category, needs_action, notes
 - `Proposals`: found_date, thread_id, card_id, sender_domain, category, suggested_list, status, outcome_date, outcome_list, notes
 - `Review prep`: item_type, item_id, list, deadline, new_thread_ids_hex, calendar_change, news, suggested_update, suggested_action, proposal_suggestion, merge_target_card_id, reason_codes, confidence, prepared_at, prepared_date, notes
 - `Brief`: line_no, kind, text, prepared_at, prepared_date
 - `Timing`: run_date, item_type, item_id, shown_at, answered_at, writes_done_at, next_shown_at
+- `Wake hits`: found_at_utc, card_id, thread_id, message_id, sender, sent_utc, watching_since, matched_address
+- `Skipped`: found_date, thread_id, reason_code
+- `Card cache`: card_id, fingerprint, summary_md, reminder, options_json, written_at, written_date, source, valid_until
 
 Keep IDs and dates as text. Do not mention the log sheet's contents to the user beyond "your log sheet".
 
