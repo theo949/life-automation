@@ -55,7 +55,7 @@ One dialog. Put a blank line between the paragraphs. Question text (paid path):
 > Heads up: this uses your Claude plan's usage, and the first email scan is the biggest. The worst that can happen is you hit your limit and runs pause until it resets. You can pause the schedule any time with /todo pause.
 
 Question text (non-paid path): the same paragraphs down to "What you need", but with "What I read: the last 7 days of your Primary email, plus bills, appointments and similar mail in your Updates tab (searched in English), your Trello board, and (optionally) your calendar." and "What I create: a Trello board (cards and comments) and a Google Sheet log.", then:
-> On a free plan things may run a bit slower. Give it a try, and if it feels too slow, the README has suggestions: https://github.com/theo949/life-automation#readme
+> On a free plan you may hit your usage limit during setup or a review. A paid plan is recommended. Your place is saved, so you can wait for the limit to reset and continue: https://github.com/theo949/life-automation#plans
 
 Options: "Start setup" / "Not now". On "Not now", stop politely.
 

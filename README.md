@@ -2,6 +2,10 @@
 
 Life Automation turns your inbox into a Trello to-do board and walks you through a daily review with Claude. You put tasks on Trello, Claude finds more in your email, and each morning you go through them together. Claude can set up meetings, draft emails for your approval and do research for you.
 
+## Plans
+
+A paid Claude plan is recommended. Life Automation does a lot of reading and checking on every run, and the scheduled helpers that do the prep ahead of time need a plan with scheduled tasks. It can run on a free plan, but the first email scan and each review can use up your free message limit, so you may be stopped part-way and have to wait for the limit to reset. Your place is saved when that happens. We can't promise a free plan will run without problems.
+
 ## What you need
 
 **Where it runs:** the Claude desktop app, claude.ai and the Claude in Chrome side panel. On mobile, reviews work but setup is easier on a computer. Claude Code is not supported.
@@ -93,7 +97,7 @@ Two limits to know about:
 
 ## If it feels slow
 
-- On a free plan the email scan is already kept small: see [How the email scan works](#how-the-email-scan-works).
+- A paid plan is recommended (see [Plans](#plans)). On a free plan the email scan is already kept small: see [How the email scan works](#how-the-email-scan-works).
 - Review a few cards at a time and stop when you like. Your place is saved.
 - A paid plan with scheduled tasks does the prep before you sit down, so the review opens quickly.
 
