@@ -135,7 +135,7 @@ Load the Trello tools now, not earlier. Find the workspaces the user is a member
 6. Done
 7. Proposed
 
-Trello creates a new board with its own default lists (To Do, Doing, Done). Remove or archive those so only the seven above remain. Set `pos` to 1 through 7 in the order above. Use as few calls as possible: if the board-creation tool accepts lists, create the seven with it; otherwise create all seven lists in one parallel batch and archive the three default lists in the same batch. Do not create labels (the connector cannot, and the product does not use them).
+Trello creates a new board with its own default lists (To Do, Doing, Done). Remove or archive those so only the seven above remain. Use as few calls as possible: if the board-creation tool accepts lists, create the seven with it, in the order above. Otherwise create the lists one at a time, in the order above, each with `pos` set to `bottom` (do not send a number as text, and do not create them in parallel, because parallel calls can scramble the order), then archive the three default lists. Do not create labels (the connector cannot, and the product does not use them).
 
 ### B. Log sheet
 This step needs Google Sheets tools. If you have none when you reach it, stop here: say that Google Sheets is not connected, show the "How to connect" line and the Sheets permission sentence from step 2, keep `setup_stage` = build, and do not run the scan or finish setup. Never say you are reusing a log sheet that you could not read.
