@@ -2,6 +2,18 @@
 
 Life Automation turns your inbox into a Trello to-do board and walks you through a daily review with Claude. You put tasks on Trello, Claude finds more in your email, and each morning you go through them together. Claude can set up meetings, draft emails for your approval and do research for you.
 
+## Install
+
+**In the Claude app:** Settings → Customize → Plugins → Add → Add marketplace, then enter `theo949/life-automation` as the marketplace. Then open Discover, find Life Automation and install it.
+
+**In Claude Code:**
+
+```
+/plugin install life-automation --marketplace theo949/life-automation
+```
+
+Before you run `/todo`, check [What you need](#what-you-need) below: Claude's memory and four connectors must be turned on first.
+
 ## Plans
 
 A paid Claude plan is recommended. Life Automation does a lot of reading and checking on every run, and the scheduled helpers that do the prep ahead of time need a plan with scheduled tasks. It can run on a free plan, but the first email scan and each review can use up your free message limit, so you may be stopped part-way and have to wait for the limit to reset. Your place is saved when that happens. We can't promise a free plan will run without problems.
@@ -47,16 +59,6 @@ Each connector asks you to approve what Claude may do. Here is what to tick and 
 
   The second box alone is enough for setup and the daily run, and is the more private choice. Without the first, Claude can't read Google files linked on your cards, so the review skips them and you open those files yourself. For the full experience, tick both.
 - **Google Sheets:** a separate connector from Google Drive. Google shows one screen, titled "Claude for Google Drive wants additional access to your Google Account" (the Sheets connector uses the same Google app as Drive), with one permission: "See, edit, create and delete all your Google Sheets spreadsheets." Allow it. Life Automation uses it to read and write your Life Automation Log sheet, which keeps its records. Without it setup stops at the log sheet, because the scan has nowhere to save what it found. Google words this permission broadly (all your spreadsheets), and Life Automation only reads and writes its own log sheet.
-
-## Install
-
-**In the Claude app:** Settings → Customize → Plugins → Add → Add marketplace, then enter `theo949/life-automation` as the marketplace. Then open Discover, find Life Automation and install it.
-
-**In Claude Code:**
-
-```
-/plugin install life-automation --marketplace theo949/life-automation
-```
 
 ## Get started
 
